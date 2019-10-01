@@ -1,0 +1,606 @@
+{
+  "Algeria": {
+    "Abidjan": []
+  },
+  "Angola": {},
+  "Benin": {
+    "Bassila": [],
+    "BOHICON": [],
+    "Boukombe" : [],
+    "Calavi" : [],
+    "Cobly" : [],
+    "Copargo" : [],
+    "Cotonou" : [
+      "Dangbo",
+      "Porto-Novo"
+    ],
+    "COVE" : [],
+    "Dangbo" : [],
+    "Djougou" : [],
+    "Kérou" : [],
+    "Kouandé" : [],
+    "Matéri" : [],
+    "Natitingou": [],
+    "Ouaké": [],
+    "Ouassa": [],
+    "Parakou": [],
+    "Pehunco": [],
+    "Porto-Novo": [],
+    "Tanguiéta": []
+  },
+  "Burkina Faso": {
+    "Ouagadougou": []
+  },
+  "Burundi": {
+    "Bubanza": [],
+    "Bujumbura": []
+  },
+  "Cameroon": {
+    "Vihiga": [],
+    "Yaoundé": []
+  },
+  "Chad": {},
+  "Congo": {
+    "Bravaville": []
+  },
+  "Congo B": {
+    "Brazzaville": []
+  },
+  "Ethopia": {
+    "Adama": [],
+    "Addis Ababa": [
+      "Addis Ketema",
+      "Akaki Kality",
+      "Bole",
+      "Gulele",
+      "Kolfe Keraniyo",
+      "Lideta",
+      "Nifas Silk Lafto",
+      "Yeka"
+    ],
+    "Assosa": [],
+    "BahirDar": [],
+    "DireDawa": [],
+    "Gambela": [],
+    "Harar": [],
+    "Hawassa": [],
+    "Jigjiga": [],
+    "Mekelle": [],
+    "Semera": []
+  },
+  "Ghana": {
+    "Accra": [
+      "Accra Central",
+      "Accra East",
+      "Accra North",
+      "Accra South",
+      "Accra West"
+    ],
+    "Accra East": [],
+    "Accra Region": [],
+    "Accra West": [],
+    "Ashaiman": [],
+    "Ashanti Region": [
+      "Efiduase",
+      "Kumasi"
+    ],
+    "Brong Ahafo Region": [],
+    "Central Region": [],
+    "Eastern Region": [],
+    "Greator Accra": [
+      "Ashiaman",
+      "Tema"
+    ],
+    "Koforidua": [],
+    "Northern Regions": [
+      "Tamale"
+    ],
+    "Takoradi": [],
+    "Tema": [],
+    "Upper east region": [],
+    "Upper west Region": [],
+    "Volta Region": [
+      "Ho"
+    ],
+    "Western Region": [
+      "Sekondi",
+      "Takoradi"
+    ]
+  },
+  "Ivory Coast": {
+    "Abidjan": []
+  },
+  "Kenya": {
+    "Bomet": [],
+    "Bungoma": [],
+    "Busia": [],
+    "Central": [
+      "Meru - SD",
+      "Thika - SD"
+    ],
+    "Coast": [
+      "Mombasa",
+      "Mombasa - SD"
+    ],
+    "Eastern": [
+      "Machakos",
+      "Machakos - SD"
+    ],
+    "Eldoret": [],
+    "Embu": [],
+    "Garissa": [],
+    "Homabay": [],
+    "Kajiado": [],
+    "Kakamega": [],
+    "Kericho": [],
+    "Kiambu": [],
+    "Kirinyaga": [],
+    "Kisii": [],
+    "Kisumu": [],
+    "Kitale": [],
+    "Lamu": [],
+    "Machakos": [],
+    "Makueni": [],
+    "Maralal": [],
+    "Mbeere": [],
+    "Meru": [],
+    "Mombasa": [
+      "Mombassa"
+    ],
+    "Murang'a": [],
+    "Nairobi": [
+      "Nairobi"
+    ],
+    "Naivasha": [],
+    "Nakuru": [],
+    "Nanyuki": [],
+    "Narok": [],
+    "Nyanza": [
+      "Kisii",
+      "Kisumu"
+    ],
+    "Rift Valley": [
+      "Eldoret",
+      "Kericho",
+      "Kericho - SD",
+      "Nakuru",
+      "Nakuru - SD",
+      "Narok - SD"
+    ],
+    "Rongai": [],
+    "Ruiru": [
+      "Ruiru"
+    ],
+    "Saiya County": [],
+    "Thika": [],
+    "Turkana": [],
+    "Vihiga": [],
+    "Western": [
+      "Bungoma",
+      "Busia",
+      "Kakamega",
+      "Vihiga"
+    ]
+  },
+  "Liberia": {
+    "Monrovia": []
+  },
+  "Madagascar": {
+    "Antananarivo": [
+      "Antananarivo - SD"
+    ],
+    "ANTSIRABE": [
+      "Antisirabe"
+    ],
+    "Central": [],
+    "Eastern": [
+      "Fianarantsoa",
+      "Mahajanga"
+    ],
+    "Seaport": [],
+    "Southern": [
+      "Toliara"
+    ],
+    "TOAMASINA": [
+      "Toamasina"
+    ]
+  },
+  "Malawi": {
+    "Blantyre": [],
+    "Chikwawa": [],
+    "Lilongwe": []
+  },
+  "Mali": {
+    "Bamako": [],
+    "Kayes": [],
+    "Koulikoro": [],
+    "Mopti": [],
+    "Ségou": [],
+    "Sikasso": []
+  },
+  "Mozambique": {
+    "Maputo": []
+  },
+  "Niger": {
+    "Dosso": [],
+    "Maradi": [],
+    "Niamey": [],
+    "Tahoua": [],
+    "Tillaberi": [],
+    "Zinder": []
+  },
+  "Nigeria": {
+    "Abakaliki": [],
+    "Abia State": [
+      "Aba",
+      "Aba South",
+      "Umuahia"
+    ],
+    "Abuja Fct": [
+      "Abuja Municipal Area Council 1",
+      "Abuja Municipal Area Council 2",
+      "Abuja Municipal Area Council 3",
+      "Bosso",
+      "Bwari",
+      "Gwagwalada"
+    ],
+    "Adamawa": [],
+    "Akwa Ibom": [
+      "Uyo LGA"
+    ],
+    "Anambra State": [
+      "Awka",
+      "Onitsha"
+    ],
+    "Asaba": [],
+    "Bauchi State": [],
+    "Bayelsa": [
+      "Bayelsa"
+    ],
+    "Benin": [],
+    "Benue": [],
+    "Borno": [],
+    "Bwari": [],
+    "Calabar": [],
+    "Cross River": [
+      "Calabar",
+      "Ogoja LGA"
+    ],
+    "Delta": [
+      "Sapele",
+      "Warri"
+    ],
+    "Ebonyi": [
+      "Abakaliki"
+    ],
+    "Edo State": [
+      "Egor",
+      "Ikpoba Okha",
+      "Oredo"
+    ],
+    "Ekiti": [
+      "Ado Ekiti"
+    ],
+    "Enugu": [
+      "Enugu 1",
+      "Enugu 2"
+    ],
+    "Gombe": [],
+    "Ikpoba Okha": [],
+    "Ilorin": [],
+    "Imo State": [
+      "Owerri",
+      "Owerri North/West/Mun"
+    ],
+    "Jigawa": [
+      "Jigawa"
+    ],
+    "Jos": [
+      "Jos North",
+      "Jos South"
+    ],
+    "Kaduna": [
+      "Chikun",
+      "Kaduna North",
+      "Sabon Gari (Kaduna Town)",
+      "Zaria"
+    ],
+    "Kano": [
+      "Kano Municipal"
+    ],
+    "Katsina": [
+      "Katsina LGA"
+    ],
+    "Kebbi": [
+      "Birnin Kebbi"
+    ],
+    "Kogi": [
+      "Lokoja"
+    ],
+    "Kwara": [
+      "Ilorin West 1",
+      "Ilorin West 2",
+      "Offa LGA"
+    ],
+    "Lagos State": [
+      "Alimosho; Ipaja - Ikotun",
+      "Alimosho (Iyana Ipaja, Egbeda, Idimu)",
+      "Amuwo Odofin",
+      "Amuwo Odofin - Festac",
+      "Ibeju/Lekki",
+      "Ikeja 1",
+      "Ikeja 2",
+      "Ikorodu",
+      "Ketu",
+      "Kosofe",
+      "Lagos Mainland (Yaba) 1",
+      "Lagos Mainland (Yaba) 2",
+      "Lasu",
+      "Mushin",
+      "Ojo",
+      "Oshodi-Isolo",
+      "Shomolu",
+      "Somolu",
+      "Surulere"
+    ],
+    "Lokoja": [],
+    "Makurdi": [],
+    "Minna": [],
+    "Nasarawa": [
+      "Karu",
+      "Keffi"
+    ],
+    "Niger": [
+      "Bida",
+      "Chanchaga"
+    ],
+    "Ogun": [
+      "Abeokuta North",
+      "Abeokuta south",
+      "Abeokuta South",
+      "Ota"
+    ],
+    "Ondo": [
+      "Akure North",
+      "Akure South"
+    ],
+    "Osun": [],
+    "Owerri": [],
+    "Oyo": [
+      "Ibadan North",
+      "Ibadan North West",
+      "Ibadan South West Local Government",
+      "Ogbomoso North"
+    ],
+    "Plateau State": [
+      "Jos North 1",
+      "Jos North 2",
+      "Jos South"
+    ],
+    "Port Harcourt": [],
+    "Rivers": [
+      "Abio-Akpor",
+      "Eleme"
+    ],
+    "Sokoto": [
+      "Sokoto",
+      "Sokoto Community"
+    ],
+    "Taraba": [],
+    "Umuahia": [],
+    "Uyo": [],
+    "Warri": [],
+    "Yobe": [],
+    "Zamfara": []
+  },
+  "Rwanda": {
+    "Eastern Rwanda": [
+      "Gatsibo",
+      "Nyagatare",
+      "Rwamagana"
+    ],
+    "Kigali": [
+      "Gasabo",
+      "Kicukiro"
+    ],
+    "Muhanga": [],
+    "Nyagatare": [],
+    "Southern Rwanda": [
+      "Huye",
+      "Kamonyi",
+      "Muhanga",
+      "Ruhango"
+    ]
+  },
+  "Senegal": {
+    "Dakar, saint-Louis": []
+  },
+  "Sierra Lonne": {
+    "Freetown": []
+  },
+  "South Africa": {
+    "Cape Town": [],
+    "Durban": [],
+    "Eastern Cape": [
+      "KSD Municipality",
+      "Mhlontlo",
+      "Nyandeni"
+    ],
+    "Free State": [
+      "Lejweleputswa District",
+      "Mangaung District"
+    ],
+    "Gauteng": [
+      "Ekurhuleni Metro",
+      "Giyani",
+      "Soweto",
+      "Tshwane Metro"
+    ],
+    "Hammanskraal": [],
+    "Johannesburg": [
+      "Johannesburg"
+    ],
+    "Kwamhlanga": [],
+    "KwaZulu-Natal": [],
+    "KZN": [
+      "Amajuba District",
+      "Durban",
+      "Mgungundlovu District",
+      "Mhlathuze District",
+      "Thekwini Metro",
+      "Tugela",
+      "Ugu District",
+      "Zululand District"
+    ],
+    "Limpopo": [
+      "Limpopo"
+    ],
+    "Mpumalanga": [
+      "Hlanzeni District"
+    ],
+    "Msinga": [],
+    "Nelspruit": [],
+    "North West": [
+      "Rustenburg District"
+    ],
+    "Pietermaritzburg": [],
+    "Pinetown": [],
+    "Polokwane": [],
+    "Pretoria": [],
+    "Rustenburg": [],
+    "Tzaneen": [],
+    "Umthatha": []
+  },
+  "Swaziland": {
+    "Swaziland": []
+  },
+  "Tanzania": {
+    "Arusha": [
+      "Arusha Rural",
+      "Arusha Urban",
+      "karatu",
+      "longido",
+      "Meru",
+      "Monduli",
+      "Ngorongoro"
+    ],
+    "Central Tanzania": [
+      "Dodoma"
+    ],
+    "Coast of Tanzania": [
+      "Mtwara"
+    ],
+    "Daresalaam": [
+      "Ilala",
+      "Kigamboni",
+      "Kinondoni",
+      "Temeke",
+      "Ubungo"
+    ],
+    "Dodoma": [
+      "Bahi",
+      "Chamwino",
+      "Chemba",
+      "Kondoa",
+      "Kongwa",
+      "Mpwapwa"
+    ],
+    "Mbeya": [],
+    "Morogoro": [],
+    "Moshi": [],
+    "Mwanza": [],
+    "Njombe": [],
+    "Northern Tanzania": [
+      "Mwanza"
+    ],
+    "Rukwa": [],
+    "Tanga (Eastern Zone)": [
+      "Handeni",
+      "Kilindi",
+      "Korogwe",
+      "lushoto",
+      "Mkinga",
+      "Muheza",
+      "Pangani",
+      "Tanga"
+    ],
+    "Western Tanzania": [
+      "Kitavi",
+      "Morogoro",
+      "Mpanda"
+    ]
+  },
+  "Togo": {
+    "Kara": [],
+    "Lome": []
+  },
+  "Uganda": {
+    "Central Uganda": [
+      "Entebe",
+      "Kampala",
+      "Kampala",
+      "Masaka",
+      "Mubende",
+      "Wakiso"
+    ],
+    "Eastern Uganda": [
+      "Jinja-Mbale",
+      "Masaka"
+    ],
+    "Gulu": [],
+    "Jinja": [],
+    "Kampala": [],
+    "Kampala, Central": [],
+    "Kampala East": [],
+    "KAR": [],
+    "Kibuli": [],
+    "Mbale": [],
+    "Mbarara west": [],
+    "Nambale": [],
+    "Northern Uganda": [
+      "Lira & Gulu"
+    ],
+    "Tororo": [],
+    "Western Uganda": [
+      "Bushenyi",
+      "Fort Portal",
+      "Ibanda",
+      "Mbarara"
+    ]
+  },
+  "Zambia": {
+    "Copperbelt Kitwe": [],
+    "Lusaka": []
+  },
+  "Zimbabwe": {
+    "Bulawayo Province": [
+      "Bulawayo Province"
+    ],
+    "Gweru": [],
+    "Harare Province": [
+      "Harare Province"
+    ],
+    "Kwekwe": [
+      "Kwekwe"
+    ],
+    "Manicaland": [
+      "Manicaland"
+    ],
+    "Marondera": [],
+    "Mashonaland Central": [
+      "Mashonaland Central"
+    ],
+    "Mashonaland East": [
+      "Mashonaland East"
+    ],
+    "Mashonaland West": [
+      "Mashonaland West"
+    ],
+    "Masvingo": [
+      "Masvingo"
+    ],
+    "Midlands": [
+      "Midlands"
+    ]
+  }
+}

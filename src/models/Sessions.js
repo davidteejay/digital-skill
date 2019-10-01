@@ -27,6 +27,10 @@ const Session = new Schema({
     type: String,
     required: true,
   },
+  language: {
+    type: String,
+    default: 'english',
+  },
   country: {
     type: String,
     required: true,
@@ -37,11 +41,38 @@ const Session = new Schema({
   },
   community: {
     type: String,
-    required: true,
   },
   expectedNumber: {
     type: Number,
     required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
+  location: {
+    type: Object,
+    required: true,
+  },
+  audienceSelection: {
+    type: String,
+    required: true,
+  },
+  audienceDescription: {
+    type: String,
+    required: true,
+  },
+  audienceExpertLevel: {
+    type: String,
+    required: true,
+  },
+  natureOfTraining: {
+    type: String,
+    required: true,
+  },
+  photoWorthy: {
+    type: Boolean,
+    default: false,
   },
   status: {
     type: String,

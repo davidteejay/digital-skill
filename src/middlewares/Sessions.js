@@ -16,10 +16,21 @@ export default class SessionMiddleware {
         date: Joi.date().min(new Date()).required(),
         time: Joi.string().trim().required(),
         trainerName: Joi.string().trim().min(3).required(),
+        language: Joi.string().trim().optional(),
         country: Joi.string().trim().min(3).required(),
         state: Joi.string().trim().min(3).required(),
-        community: Joi.string().trim().min(3).required(),
+        community: Joi.string().trim().min(3).optional(),
         expectedNumber: Joi.number().min(0).required(),
+        address: Joi.string().trim().min(3).required(),
+        location: Joi.object({
+          latitude: Joi.number().required(),
+          longitude: Joi.number().required(),
+        }).required(),
+        audienceSelection: Joi.string().trim().min(3).required(),
+        audienceDescription: Joi.string().trim().min(3).required(),
+        audienceExpertLevel: Joi.string().trim().min(3).required(),
+        natureOfTraining: Joi.string().trim().min(3).required(),
+        photoWorthy: Joi.boolean().optional(),
         createdBy: Joi.string().trim().optional(),
       });
 
