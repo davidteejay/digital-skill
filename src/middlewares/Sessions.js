@@ -3,7 +3,7 @@
 import Joi from 'joi';
 
 import {
-  serverError, incompleteDataError, notFoundError,
+  serverError, incompleteDataError, notFoundError, accessDenied,
 } from '../helpers/errors';
 import Sessions from '../models/Sessions';
 
@@ -15,7 +15,7 @@ export default class SessionMiddleware {
         materials: Joi.string().trim().min(3).required(),
         date: Joi.date().min(new Date()).required(),
         time: Joi.string().trim().required(),
-        trainerName: Joi.string().trim().min(3).required(),
+        trainer: Joi.string().trim().min(3).optional(),
         language: Joi.string().trim().optional(),
         country: Joi.string().trim().min(3).required(),
         state: Joi.string().trim().min(3).required(),
@@ -64,6 +64,68 @@ export default class SessionMiddleware {
           return next();
         })
         .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async checkIfUserHasAccess(req, res, next) {
+    try {
+      const { auth: { type } } = req.data;
+
+      if (type === 'partner' || type === 'admin') return next();
+
+      return accessDenied(res, 'You don\'t access to this feature');
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async checkIfSessionIsApproved(req, res, next) {
+    try {
+      const { session: { status } } = req.data;
+
+      if (status !== 'approved') return next();
+
+      return accessDenied(res, 'This session has been approved already');
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async checkIfUserCanClockIn(req, res, next) {
+    try {
+      const { session: { date, status } } = req.data;
+      const today = new Date();
+
+      if (status !== 'approved') return accessDenied(res, 'This session has not been approved');
+      if (today > new Date(date)) return accessDenied(res, 'You can\'t clock in yet');
+
+      return next();
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async checkIfSessionIsClockedIn(req, res, next) {
+    try {
+      const { session: { clockStatus } } = req.data;
+
+      if (clockStatus !== 'clocked in') return next();
+
+      return accessDenied(res, 'This session has been clocked in already');
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async checkIfSessionIsClockedOut(req, res, next) {
+    try {
+      const { session: { clockStatus } } = req.data;
+
+      if (clockStatus !== 'clocked out') return next();
+
+      return accessDenied(res, 'This session has been clocked out already');
     } catch (err) {
       return serverError(res, err.message);
     }

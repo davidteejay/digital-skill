@@ -23,9 +23,10 @@ const Session = new Schema({
     type: String,
     required: true,
   },
-  trainerName: {
-    type: String,
+  trainer: {
+    type: ObjectId,
     required: true,
+    ref: 'Users',
   },
   language: {
     type: String,
@@ -78,10 +79,20 @@ const Session = new Schema({
     type: String,
     default: 'awaiting approval',
   },
-  approvals: [{
+  approvedBy: {
     type: ObjectId,
     ref: 'Users',
-  }],
+  },
+  clockStatus: {
+    type: String,
+    default: 'clocked out',
+  },
+  clockInTime: {
+    type: Date,
+  },
+  clockOutTime: {
+    type: Date,
+  },
   createdBy: {
     type: ObjectId,
     ref: 'Users',

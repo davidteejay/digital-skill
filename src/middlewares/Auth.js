@@ -1,10 +1,9 @@
 /* eslint-disable eqeqeq */
 /* eslint-disable consistent-return */
 import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
-import { serverError, accessDenied, incompleteDataError } from '../helpers/errors';
+import { serverError, accessDenied } from '../helpers/errors';
 
 dotenv.config();
 const { SECRET } = process.env;
@@ -31,21 +30,6 @@ export default class AuthMiddleware {
           return next();
         });
       } else return accessDenied(res, 'Invalid Token');
-    } catch (err) {
-      return serverError(res, err.message);
-    }
-  }
-
-  static async checkIfIdIsValid(req, res, next) {
-    try {
-      const { Types: { ObjectId } } = mongoose;
-      const { id } = req.params;
-
-      const validateId = ObjectId.isValid(id) && new ObjectId(id) == id;
-
-      if (validateId) return next();
-
-      return incompleteDataError(res, 'Invalid ID');
     } catch (err) {
       return serverError(res, err.message);
     }

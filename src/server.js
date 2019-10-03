@@ -9,6 +9,8 @@ import mongoose from 'mongoose';
 import Debug from 'debug';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
+import cloudinary from 'cloudinary';
+import formData from 'express-form-data';
 
 import routes from './routes';
 
@@ -20,8 +22,14 @@ mongoose.promise = global.Promise;
 // .env configuration with dotenv
 dotenv.config();
 const {
-  NODE_ENV, DB_DEV, DB_PROD, PORT,
+  NODE_ENV, DB_DEV, DB_PROD, PORT, CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET,
 } = process.env;
+
+cloudinary.config({
+  cloud_name: CLOUDINARY_CLOUD_NAME,
+  api_key: CLOUDINARY_API_KEY,
+  api_secret: CLOUDINARY_API_SECRET,
+});
 
 // Setup debug
 const debug = Debug('app:server');
@@ -34,7 +42,7 @@ const app = express();
 
 // Configure our app
 app.use(cors());
-
+app.use(formData.parse());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
