@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose';
 
+const { Types: { ObjectId } } = Schema;
+
 const User = new Schema({
   id: {
     type: String,
@@ -7,7 +9,15 @@ const User = new Schema({
   },
   type: {
     type: String,
-    default: 'trainer',
+    required: true,
+  },
+  partner: {
+    type: ObjectId,
+    ref: 'Users',
+  },
+  admin: {
+    type: ObjectId,
+    ref: 'Users',
   },
   firstName: {
     type: String,

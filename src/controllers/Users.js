@@ -5,16 +5,27 @@ import crypto from 'crypto';
 import Users from '../models/Users';
 import generateToken from '../helpers/generateToken';
 import generateID from '../helpers/generateID';
-import { serverError, notFoundError } from '../helpers/errors';
+import { serverError, notFoundError, incompleteDataError } from '../helpers/errors';
 
 export default class UserController {
-  static async signUp(req, res) {
+  static async addUser(req, res) {
     try {
-      const { hash, salt } = req.data;
+      const { hash, salt, auth: { type, _id } } = req.data;
       const id = await generateID(res, Users);
+      const userType = req.body.type;
+      const partnerID = req.body.partner;
+
+      if (type === 'admin' && userType === 'trainer' && !partnerID) return incompleteDataError(res, 'partner is required');
+
+      let partner = '';
+      let admin = null;
+      if (type === 'admin') {
+        partner = req.body.partner;
+        admin = _id;
+      } else partner = _id;
 
       await new Users({
-        ...req.body, hash, salt, id,
+        ...req.body, hash, salt, id, partner, admin,
       })
         .save()
         .then(async (data) => {
@@ -36,7 +47,8 @@ export default class UserController {
       const { email, password } = req.body;
 
       await Users.findOne({ email, isDeleted: false })
-        .populate('role')
+        .populate('admin')
+        .populate('partner')
         .then(async (data) => {
           if (data === null) return notFoundError(res, 'Email or Password is incorrect');
 

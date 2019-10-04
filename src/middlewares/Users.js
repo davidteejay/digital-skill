@@ -6,13 +6,15 @@ import crypto from 'crypto';
 import Users from '../models/Users';
 import {
   serverError, incompleteDataError, alreadyExistsError, notFoundError,
+  accessDenied,
 } from '../helpers/errors';
 
 export default class UserMiddleware {
   static async validateData(req, res, next) {
     try {
       const schema = Joi.object().keys({
-        type: Joi.string().trim().optional(),
+        type: Joi.string().trim().min(3).required(),
+        partner: Joi.string().trim().min(3).optional(),
         firstName: Joi.string().trim().min(3).required(),
         lastName: Joi.string().trim().min(3).required(),
         email: Joi.string().trim().email().required(),
@@ -31,6 +33,18 @@ export default class UserMiddleware {
           const errors = error.details.map((d) => d.message);
           return incompleteDataError(res, errors);
         });
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async checkIfUserHasAccess(req, res, next) {
+    try {
+      const { auth: { type } } = req.data;
+
+      if (type === 'partner' || type === 'admin') return next();
+
+      return accessDenied(res, 'You don\'t access to this feature');
     } catch (err) {
       return serverError(res, err.message);
     }
