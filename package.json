@@ -11,8 +11,7 @@
     "db:migrate": "./node_modules/.bin/sequelize db:migrate",
     "db:undo:migrate:all": "./node_modules/.bin/sequelize db:migrate:undo:all",
     "db:undo:migrate": "./node_modules/.bin/sequelize db:migrate:undo",
-    "db:seed": "./node_modules/.bin/sequelize db:seed:all",
-    "heroku-postbuild": "npm run db:migrate && npm run db:seed"
+    "db:seed": "./node_modules/.bin/sequelize db:seed:all"
   },
   "keywords": [],
   "author": "Chibuokem Onyekwelu",
