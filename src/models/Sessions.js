@@ -117,8 +117,6 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Sessions.associate = function(models) {
     // associations can be defined here
-    Sessions.belongsTo(models.Users, { foreignKey: 'trainer' })
-    Sessions.hasMany(models.Reports, { foreignKey: 'session' })
   };
   return Sessions;
 };

@@ -56,8 +56,6 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Reports.associate = function(models) {
     // associations can be defined here
-    Reports.belongsTo(models.Sessions, { foreignKey: 'session' })
-    Reports.hasOne(models.Users, { foreignKey: 'trainer' })
   };
   return Reports;
 };
