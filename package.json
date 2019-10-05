@@ -7,7 +7,12 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./build/server.js",
     "dev": "DEBUG=app:* nodemon --exec babel-node ./src/server.js",
-    "build": "babel -d ./build ./src -s --copy-files"
+    "build": "babel -d ./build ./src -s --copy-files",
+    "db:migrate": "./node_modules/.bin/sequelize db:migrate",
+    "db:undo:migrate:all": "./node_modules/.bin/sequelize db:migrate:undo:all",
+    "db:undo:migrate": "./node_modules/.bin/sequelize db:migrate:undo",
+    "db:seed": "./node_modules/.bin/sequelize db:seed:all",
+    "heroku-postbuild": "npm run db:migrate && npm run db:seed"
   },
   "keywords": [],
   "author": "Chibuokem Onyekwelu",
@@ -33,6 +38,10 @@
     "multer": "^1.4.1",
     "nodemailer": "^6.1.1",
     "nodemailer-sendgrid-transport": "^0.2.0",
+    "pg": "^7.12.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^5.19.3",
+    "sequelize-cli": "^5.5.1",
     "uuid": "^3.3.2"
   },
   "devDependencies": {

@@ -9,7 +9,7 @@ const generateID = async (res, model) => {
     while (exists) {
       const id = (Math.random() * 1000000).toPrecision(6);
       model
-        .findOne({ id, isDeleted: false })
+        .findOne({ where: { id } })
         .then((data) => {
           if (data === null) {
             exists = false;

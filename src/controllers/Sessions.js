@@ -1,14 +1,16 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */
-import Sessions from '../models/Sessions';
+import db from '../models';
 import { serverError } from '../helpers/errors';
 import generateID from '../helpers/generateID';
+
+const { Sessions } = db;
 
 export default class SessionController {
   static async getAll(req, res) {
     try {
       await Sessions
-        .find({ ...req.params, isDeleted: false })
-        .populate('trainer', 'firstName lastName email')
+        .findAll({ where: { ...req.params, isDeleted: false } })
         .then((data) => res.status(200).send({
           data,
           message: 'Sessions Fetched Successfully',
@@ -22,16 +24,16 @@ export default class SessionController {
 
   static async schedule(req, res) {
     try {
-      const { auth: { type, _id } } = req.data;
-      const id = await generateID(res, Sessions);
+      const { auth: { type, id } } = req.data;
+      const sessionId = await generateID(res, Sessions);
 
-      await new Sessions({
-        ...req.body,
-        trainer: type === 'trainer' ? _id : req.body.trainer,
-        createdBy: _id,
-        id,
-      })
-        .save()
+      await Sessions
+        .create({
+          ...req.body,
+          trainer: type === 'trainer' ? id : req.body.trainer,
+          createdBy: id,
+          id: sessionId,
+        })
         .then((data) => res.status(200).send({
           data,
           message: 'Session Scheduled Successfully',
@@ -45,14 +47,42 @@ export default class SessionController {
 
   static async approve(req, res) {
     try {
-      const { auth: { _id } } = req.data;
+      const { auth: { type } } = req.data;
       const { id } = req.params;
 
+      let update = {};
+      if (type === 'partner') update = { trainerStatus: 'done', partnerStatus: 'waiting' };
+      else if (type === 'admin') update = { partnerStatus: 'done', adminStatus: 'waiting' };
+      else update = { adminStatus: 'done' };
+
       await Sessions
-        .findOneAndUpdate({ id }, { approvedBy: _id, status: 'approved' }, { new: true })
-        .then((data) => res.status(200).send({
-          data,
-          message: 'Session Approved Successfully',
+        .update(update, { returning: true, where: { id } })
+        .then(([num, rows]) => res.status(200).send({
+          data: rows[0],
+          message: 'Session approved Successfully',
+          error: false,
+        }))
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async reject(req, res) {
+    try {
+      const { auth: { type } } = req.data;
+      const { id } = req.params;
+
+      let update = {};
+      if (type === 'partner') update = { trainerStatus: 'failed' };
+      else if (type === 'admin') update = { partnerStatus: 'failed' };
+      else update = { adminStatus: 'failed' };
+
+      await Sessions
+        .update(update, { returning: true, where: { id } })
+        .then(([num, rows]) => res.status(200).send({
+          data: rows[0],
+          message: 'Session rejected Successfully',
           error: false,
         }))
         .catch((err) => serverError(res, err.message));
@@ -66,9 +96,12 @@ export default class SessionController {
       const { id } = req.params;
 
       await Sessions
-        .findOneAndUpdate({ id }, { clockInTime: new Date(), clockStatus: 'clocked in' }, { new: true })
-        .then((data) => res.status(200).send({
-          data,
+        .update(
+          { clockInTime: new Date(), clockStatus: 'clocked in' },
+          { returning: true, where: { id } },
+        )
+        .then(([num, rows]) => res.status(200).send({
+          data: rows[0],
           message: 'Session Clocked in Successfully',
           error: false,
         }))
@@ -83,9 +116,12 @@ export default class SessionController {
       const { id } = req.params;
 
       await Sessions
-        .findOneAndUpdate({ id }, { clockOutTime: new Date(), clockStatus: 'clocked out' }, { new: true })
-        .then((data) => res.status(200).send({
-          data,
+        .update(
+          { clockOutTime: new Date(), clockStatus: 'clocked out' },
+          { returning: true, where: { id } },
+        )
+        .then(([num, rows]) => res.status(200).send({
+          data: rows[0],
           message: 'Session Clocked out Successfully',
           error: false,
         }))

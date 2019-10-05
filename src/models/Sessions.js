@@ -1,108 +1,124 @@
-import { Schema, model } from 'mongoose';
+'use strict';
+module.exports = (sequelize, DataTypes) => {
+  const { DATE, STRING, ENUM, BOOLEAN, DATEONLY, TIME } = DataTypes;
 
-const { Types: { ObjectId } } = Schema;
-
-const Session = new Schema({
-  id: {
-    type: String,
-    required: true,
-  },
-  type: {
-    type: String,
-    required: true,
-  },
-  materials: {
-    type: String,
-    required: true,
-  },
-  date: {
-    type: Date,
-    required: true,
-  },
-  time: {
-    type: String,
-    required: true,
-  },
-  trainer: {
-    type: ObjectId,
-    required: true,
-    ref: 'Users',
-  },
-  language: {
-    type: String,
-    default: 'english',
-  },
-  country: {
-    type: String,
-    required: true,
-  },
-  state: {
-    type: String,
-    required: true,
-  },
-  community: {
-    type: String,
-  },
-  expectedNumber: {
-    type: Number,
-    required: true,
-  },
-  address: {
-    type: String,
-    required: true,
-  },
-  location: {
-    type: Object,
-    required: true,
-  },
-  audienceSelection: {
-    type: String,
-    required: true,
-  },
-  audienceDescription: {
-    type: String,
-    required: true,
-  },
-  audienceExpertLevel: {
-    type: String,
-    required: true,
-  },
-  natureOfTraining: {
-    type: String,
-    required: true,
-  },
-  photoWorthy: {
-    type: Boolean,
-    default: false,
-  },
-  status: {
-    type: String,
-    default: 'awaiting approval',
-  },
-  approvedBy: {
-    type: ObjectId,
-    ref: 'Users',
-  },
-  clockStatus: {
-    type: String,
-    default: 'clocked out',
-  },
-  clockInTime: {
-    type: Date,
-  },
-  clockOutTime: {
-    type: Date,
-  },
-  createdBy: {
-    type: ObjectId,
-    ref: 'Users',
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
-}, {
-  timestamps: true,
-});
-
-export default model('Sessions', Session);
+  const Sessions = sequelize.define('Sessions', {
+    id: {
+      type: STRING,
+      allowNull: false,
+      unique: true,
+      primaryKey: true
+    },
+    type: {
+      type: STRING,
+      allowNull: false,
+    },
+    materials: {
+      type: STRING,
+      allowNull: false,
+    },
+    date: {
+      type: DATEONLY,
+      allowNull: false,
+    },
+    time: {
+      type: TIME,
+      allowNull: false,
+    },
+    trainer: {
+      type: STRING,
+      allowNull: false,
+      references: {
+        model: 'Users',
+        key: 'id'
+      }
+    },
+    language: {
+      type: STRING,
+      defaultValue: 'english',
+    },
+    country: {
+      type: STRING,
+      allowNull: false,
+    },
+    state: {
+      type: STRING,
+      allowNull: false,
+    },
+    community: {
+      type: STRING,
+    },
+    expectedNumber: {
+      type: STRING,
+      allowNull: false,
+    },
+    address: {
+      type: STRING,
+      allowNull: false,
+    },
+    location: {
+      type: STRING,
+      allowNull: false,
+      // get: function(){
+      //   return JSON.parse(this.getDataValue('location'))
+      // },
+      set: function (val) {
+        return this.setDataValue('location', JSON.stringify(val))
+      }
+    },
+    audienceSelection: {
+      type: STRING,
+      allowNull: false,
+    },
+    audienceDescription: {
+      type: STRING,
+      allowNull: false,
+    },
+    audienceExpertLevel: {
+      type: STRING,
+      allowNull: false,
+    },
+    natureOfTraining: {
+      type: STRING,
+      allowNull: false,
+    },
+    photoWorthy: {
+      type: BOOLEAN,
+      defaultValue: false,
+    },
+    trainerStatus: {
+      type: ENUM('no_action', 'waiting', 'done', 'failed'),
+      defaultValue: 'waiting',
+    },
+    adminStatus: {
+      type: ENUM('no_action', 'waiting', 'done', 'failed'),
+      defaultValue: 'no_action',
+    },
+    partnerStatus: {
+      type: ENUM('no_action', 'waiting', 'done', 'failed'),
+      defaultValue: 'waiting',
+    },
+    clockStatus: {
+      type: ENUM('clocked in', 'clocked out'),
+      defaultValue: 'clocked out',
+    },
+    clockInTime: {
+      type: DATE,
+    },
+    clockOutTime: {
+      type: DATE,
+    },
+    isDeleted: {
+      type: BOOLEAN,
+      defaultValue: false,
+    },
+    createdAt: DATE,
+    updatedAt: DATE,
+  }, {});
+  Sessions.associate = function(models) {
+    // associations can be defined here
+    Sessions.belongsTo(models.Users, { foreignKey: 'trainer' })
+    Sessions.hasMany(models.Reports, { foreignKey: 'session' })
+  };
+  return Sessions;
+};
