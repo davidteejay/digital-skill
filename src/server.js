@@ -11,6 +11,7 @@ import dotenv from 'dotenv';
 import morgan from 'morgan';
 import cloudinary from 'cloudinary';
 import formData from 'express-form-data';
+import Sequelize from 'sequelize';
 
 import routes from './routes';
 
@@ -51,17 +52,17 @@ if (!isProduction) {
 }
 
 // Configure Mongoose
-mongoose
-  .connect(isProduction ? DB_PROD : DB_DEV, {
-    useNewUrlParser: true,
-  })
-  .then(() => debug('DB Connected'))
-  .catch((err) => {
-    debug(err);
-    debug('DB Connection Failed');
-  });
+// mongoose
+//   .connect(isProduction ? DB_PROD : DB_DEV, {
+//     useNewUrlParser: true,
+//   })
+//   .then(() => debug('DB Connected'))
+//   .catch((err) => {
+//     debug(err);
+//     debug('DB Connection Failed');
+//   });
 
-mongoose.set('debug', true);
+// mongoose.set('debug', true);
 
 // Routes
 app.use('/api/v1/', routes);

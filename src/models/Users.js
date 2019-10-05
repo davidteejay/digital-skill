@@ -1,71 +1,74 @@
-import { Schema, model } from 'mongoose';
+'use strict';
+module.exports = (sequelize, DataTypes) => {
+  const { DATE, STRING, ENUM, BOOLEAN } = DataTypes;
 
-const { Types: { ObjectId } } = Schema;
-
-const User = new Schema({
-  id: {
-    type: String,
-    required: true,
-  },
-  type: {
-    type: String,
-    required: true,
-  },
-  partner: {
-    type: ObjectId,
-    ref: 'Users',
-  },
-  admin: {
-    type: ObjectId,
-    ref: 'Users',
-  },
-  firstName: {
-    type: String,
-    required: true,
-  },
-  lastName: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-  },
-  hash: {
-    type: String,
-    required: true,
-  },
-  salt: {
-    type: String,
-    required: true,
-  },
-  sex: {
-    type: String,
-    required: true,
-  },
-  phone: {
-    type: String,
-    required: true,
-  },
-  language: {
-    type: String,
-    default: 'english',
-  },
-  country: {
-    type: String,
-  },
-  state: {
-    type: String,
-  },
-  community: {
-    type: String,
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
-}, {
-  timestamps: true,
-});
-
-export default model('Users', User);
+  const Users = sequelize.define('Users', {
+    id: {
+      type: STRING,
+      allowNull: false,
+      unique: true,
+      primaryKey: true
+    },
+    type: {
+      type: ENUM('trainer', 'partner', 'admin', 'super admin'),
+      allowNull: false,
+    },
+    partner: {
+      type: STRING,
+      references: {
+        model: 'Users',
+        key: 'id'
+      },
+    },
+    admin: {
+      type: STRING,
+      references: {
+        model: 'Users',
+        key: 'id'
+      },
+    },
+    firstName: {
+      type: STRING,
+      allowNull: false,
+    },
+    lastName: {
+      type: STRING,
+      allowNull: false,
+    },
+    email: {
+      type: STRING,
+      allowNull: false,
+    },
+    password: {
+      type: STRING,
+      allowNull: false,
+    },
+    sex: {
+      type: ENUM('male', 'female'),
+      allowNull: false,
+    },
+    phone: {
+      type: STRING,
+      allowNull: false,
+    },
+    language: {
+      type: STRING,
+      defaultValue: 'english',
+    },
+    country: STRING,
+    state: STRING,
+    community: STRING,
+    isDeleted: {
+      type: BOOLEAN,
+      defaultValue: false,
+    },
+    createdAt: DATE,
+    updatedAt: DATE,
+  }, {});
+  Users.associate = function(models) {
+    // associations can be defined here
+    Users.hasMany(models.Sessions, { foreignKey: 'trainer' });
+    Users.hasMany(models.Reports, { foreignKey: 'trainer' });
+  };
+  return Users;
+};

@@ -3,11 +3,14 @@
 import Joi from 'joi';
 import crypto from 'crypto';
 
-import Users from '../models/Users';
+import db from '../models';
+
 import {
   serverError, incompleteDataError, alreadyExistsError, notFoundError,
   accessDenied,
 } from '../helpers/errors';
+
+const { Users } = db;
 
 export default class UserMiddleware {
   static async validateData(req, res, next) {
@@ -42,7 +45,7 @@ export default class UserMiddleware {
     try {
       const { auth: { type } } = req.data;
 
-      if (type === 'partner' || type === 'admin') return next();
+      if (type === 'partner' || type === 'admin' || type === 'super admin') return next();
 
       return accessDenied(res, 'You don\'t access to this feature');
     } catch (err) {
@@ -54,7 +57,8 @@ export default class UserMiddleware {
     try {
       const { email } = req.body;
 
-      await Users.findOne({ email, isDeleted: false })
+      await Users
+        .findOne({ where: { email, isDeleted: false } })
         .then((data) => {
           if (data === null) {
             return next();
@@ -73,7 +77,7 @@ export default class UserMiddleware {
       const { id } = req.params;
 
       await Users
-        .findOne({ id, isDeleted: false })
+        .findByPk(id)
         .then((data) => {
           if (data === null) {
             return notFoundError(res, 'User Not Found');

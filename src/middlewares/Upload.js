@@ -1,6 +1,5 @@
 /* eslint-disable consistent-return */
 import cloudinary from 'cloudinary';
-import debug from 'debug';
 
 import { serverError } from '../helpers/errors';
 
@@ -12,11 +11,11 @@ export default class UploadMiddleware {
 
       Promise
         .all(promises)
-        .then((images) => {
-          debug('app:upload')(images);
+        .then(async (images) => {
+          const allImages = await images.map((image) => image.secure_url);
           req.data = {
             ...req.data,
-            images,
+            images: allImages,
           };
 
           return next();

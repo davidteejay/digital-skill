@@ -1,37 +1,37 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable consistent-return */
-import crypto from 'crypto';
-
-import Users from '../models/Users';
+import db from '../models';
 import generateToken from '../helpers/generateToken';
 import generateID from '../helpers/generateID';
 import { serverError, notFoundError, incompleteDataError } from '../helpers/errors';
 
+const { Users } = db;
+
 export default class UserController {
   static async addUser(req, res) {
     try {
-      const { hash, salt, auth: { type, _id } } = req.data;
-      const id = await generateID(res, Users);
+      const { hash, salt, auth: { type, id } } = req.data;
+      const userId = await generateID(res, Users);
       const userType = req.body.type;
       const partnerID = req.body.partner;
 
-      if (type === 'admin' && userType === 'trainer' && !partnerID) return incompleteDataError(res, 'partner is required');
+      if ((type === 'admin' || type === 'super admin') && userType === 'trainer' && !partnerID) return incompleteDataError(res, 'partner is required');
 
       let partner = '';
       let admin = null;
-      if (type === 'admin') {
+      if (type === 'admin' || type === 'super admin') {
         partner = req.body.partner;
-        admin = _id;
-      } else partner = _id;
+        admin = id;
+      } else partner = id;
 
-      await new Users({
-        ...req.body, hash, salt, id, partner, admin,
-      })
-        .save()
+      await Users
+        .create({
+          ...req.body, hash, salt, id: userId, partner, admin,
+        })
         .then(async (data) => {
-          const token = await generateToken(res, data);
+          const token = await generateToken(res, data.toJSON());
           return res.status(200).send({
-            data: { ...data._doc, token },
+            data: { ...data.toJSON(), token },
             message: 'Signup Successful',
             error: false,
           });
@@ -46,19 +46,14 @@ export default class UserController {
     try {
       const { email, password } = req.body;
 
-      await Users.findOne({ email, isDeleted: false })
-        .populate('admin')
-        .populate('partner')
+      await Users
+        .findOne({ where: { email, password, isDeleted: false } })
         .then(async (data) => {
           if (data === null) return notFoundError(res, 'Email or Password is incorrect');
 
-          const hash = crypto.pbkdf2Sync(password, data.salt, 10000, 512, 'sha512').toString('hex');
-
-          if (hash !== data.hash) return notFoundError(res, 'Email or Password is incorrect');
-
-          const token = await generateToken(res, data);
+          const token = await generateToken(res, data.toJSON());
           return res.status(200).send({
-            data: { ...data._doc, token },
+            data: { ...data.toJSON(), token },
             message: 'Login Successful',
             error: false,
           });

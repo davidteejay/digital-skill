@@ -5,7 +5,9 @@ import Joi from 'joi';
 import {
   serverError, incompleteDataError, notFoundError, accessDenied,
 } from '../helpers/errors';
-import Sessions from '../models/Sessions';
+import db from '../models';
+
+const { Sessions } = db;
 
 export default class SessionMiddleware {
   static async validateData(req, res, next) {
@@ -50,7 +52,7 @@ export default class SessionMiddleware {
       const { id } = req.params;
 
       await Sessions
-        .findOne({ id, isDeleted: false })
+        .findByPk(id)
         .then((data) => {
           if (data === null) {
             return notFoundError(res, 'Session Not Found');
@@ -58,7 +60,7 @@ export default class SessionMiddleware {
 
           req.data = {
             ...req.data,
-            session: data,
+            session: data.toJSON(),
           };
 
           return next();
@@ -73,7 +75,7 @@ export default class SessionMiddleware {
     try {
       const { auth: { type } } = req.data;
 
-      if (type === 'partner' || type === 'admin') return next();
+      if (type === 'partner' || type === 'admin' || type === 'super admin') return next();
 
       return accessDenied(res, 'You don\'t access to this feature');
     } catch (err) {
@@ -81,24 +83,11 @@ export default class SessionMiddleware {
     }
   }
 
-  static async checkIfSessionIsApproved(req, res, next) {
-    try {
-      const { session: { status } } = req.data;
-
-      if (status !== 'approved') return next();
-
-      return accessDenied(res, 'This session has been approved already');
-    } catch (err) {
-      return serverError(res, err.message);
-    }
-  }
-
   static async checkIfUserCanClockIn(req, res, next) {
     try {
-      const { session: { date, status } } = req.data;
+      const { session: { date } } = req.data;
       const today = new Date();
 
-      if (status !== 'approved') return accessDenied(res, 'This session has not been approved');
       if (today > new Date(date)) return accessDenied(res, 'You can\'t clock in yet');
 
       return next();

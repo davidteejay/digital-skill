@@ -1,0 +1,119 @@
+'use strict';
+module.exports = {
+  up: (queryInterface, Sequelize) => {
+    const { DATE, STRING, ENUM, BOOLEAN, DATEONLY, TIME } = Sequelize;
+
+    return queryInterface.createTable('Sessions', {
+      id: {
+        type: STRING,
+        allowNull: false,
+        unique: true,
+        primaryKey: true
+      },
+      type: {
+        type: STRING,
+        allowNull: false,
+      },
+      materials: {
+        type: STRING,
+        allowNull: false,
+      },
+      date: {
+        type: DATEONLY,
+        allowNull: false,
+      },
+      time: {
+        type: TIME,
+        allowNull: false,
+      },
+      trainer: {
+        type: STRING,
+        allowNull: false,
+      },
+      language: {
+        type: STRING,
+        defaultValue: 'english',
+      },
+      country: {
+        type: STRING,
+        allowNull: false,
+      },
+      state: {
+        type: STRING,
+        allowNull: false,
+      },
+      community: {
+        type: STRING,
+      },
+      expectedNumber: {
+        type: STRING,
+        allowNull: false,
+      },
+      address: {
+        type: STRING,
+        allowNull: false,
+      },
+      location: {
+        type: STRING,
+        allowNull: false,
+      },
+      audienceSelection: {
+        type: STRING,
+        allowNull: false,
+      },
+      audienceDescription: {
+        type: STRING,
+        allowNull: false,
+      },
+      audienceExpertLevel: {
+        type: STRING,
+        allowNull: false,
+      },
+      natureOfTraining: {
+        type: STRING,
+        allowNull: false,
+      },
+      photoWorthy: {
+        type: BOOLEAN,
+        defaultValue: false,
+      },
+      trainerStatus: {
+        type: ENUM('no_action', 'waiting', 'done', 'failed'),
+        defaultValue: 'waiting',
+      },
+      adminStatus: {
+        type: ENUM('no_action', 'waiting', 'done', 'failed'),
+        defaultValue: 'no_action',
+      },
+      partnerStatus: {
+        type: ENUM('no_action', 'waiting', 'done', 'failed'),
+        defaultValue: 'waiting',
+      },
+      clockStatus: {
+        type: ENUM('clocked in', 'clocked out'),
+        defaultValue: 'clocked out',
+      },
+      clockInTime: {
+        type: DATE,
+      },
+      clockOutTime: {
+        type: DATE,
+      },
+      isDeleted: {
+        type: BOOLEAN,
+        defaultValue: false,
+      },
+      createdAt: {
+        allowNull: false,
+        type: DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: DATE
+      }
+    });
+  },
+  down: (queryInterface, Sequelize) => {
+    return queryInterface.dropTable('Sessions');
+  }
+};

@@ -5,8 +5,9 @@ import Joi from 'joi';
 import {
   serverError, incompleteDataError, notFoundError,
 } from '../helpers/errors';
-import Sessions from '../models/Sessions';
-import Reports from '../models/Reports';
+import db from '../models';
+
+const { Sessions, Reports } = db;
 
 export default class ReportMiddleware {
   static async validateData(req, res, next) {
@@ -35,7 +36,7 @@ export default class ReportMiddleware {
       const { id } = req.params;
 
       await Reports
-        .findOne({ id, isDeleted: false })
+        .findByPk(id)
         .then((data) => {
           if (data === null) {
             return notFoundError(res, 'Report Not Found');
@@ -43,7 +44,7 @@ export default class ReportMiddleware {
 
           req.data = {
             ...req.data,
-            report: data,
+            report: data.toJSON(),
           };
 
           return next();
@@ -59,7 +60,7 @@ export default class ReportMiddleware {
       const { session } = req.body;
 
       await Sessions
-        .findOne({ id: session, isDeleted: false })
+        .findByPk(session)
         .then((data) => {
           if (data === null) {
             return notFoundError(res, 'Session Not Found');
@@ -67,11 +68,27 @@ export default class ReportMiddleware {
 
           req.data = {
             ...req.data,
-            session: data,
+            session: data.toJSON(),
           };
 
           return next();
         })
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async changeSessionStatus(req, res, next) {
+    try {
+      const { session } = req.body;
+
+      await Sessions
+        .update(
+          { trainerStatus: 'waiting' },
+          { where: { id: session } },
+        )
+        .then(() => next())
         .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);

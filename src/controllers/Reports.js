@@ -1,20 +1,23 @@
 /* eslint-disable consistent-return */
-import Reports from '../models/Reports';
+import db from '../models';
 import { serverError } from '../helpers/errors';
 import generateID from '../helpers/generateID';
+
+const { Reports } = db;
 
 export default class ReportController {
   static async addReport(req, res) {
     try {
-      const { auth: { _id }, images } = req.data;
-      const id = await generateID(res, Reports);
+      const { auth: { id }, images } = req.data;
+      const reportId = await generateID(res, Reports);
 
-      const allImages = await images.map((image) => image.secure_url);
-
-      await new Reports({
-        ...req.body, id, trainer: _id, images: allImages,
-      })
-        .save()
+      await Reports
+        .create({
+          ...req.body,
+          id: reportId,
+          trainer: id,
+          images,
+        })
         .then((data) => res.status(200).send({
           data,
           message: 'Report sent successfully',
