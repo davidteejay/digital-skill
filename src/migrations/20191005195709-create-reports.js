@@ -16,13 +16,21 @@ module.exports = {
         unique: true,
         primaryKey: true
       },
-      trainer: {
+      trainerId: {
         type: STRING,
         allowNull: false,
+        references: {
+          model: 'Users',
+          key: 'id'
+        }
       },
-      session: {
+      sessionId: {
         type: STRING,
         allowNull: false,
+        references: {
+          model: 'Sessions',
+          key: 'id'
+        }
       },
       images: {
         type: STRING,

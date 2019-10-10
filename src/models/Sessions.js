@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       type: TIME,
       allowNull: false,
     },
-    trainer: {
+    trainerId: {
       type: STRING,
       allowNull: false,
       references: {
@@ -59,9 +59,9 @@ module.exports = (sequelize, DataTypes) => {
     location: {
       type: STRING,
       allowNull: false,
-      // get: function(){
-      //   return JSON.parse(this.getDataValue('location'))
-      // },
+      get: function(){
+        return JSON.parse(this.getDataValue('location'))
+      },
       set: function (val) {
         return this.setDataValue('location', JSON.stringify(val))
       }
@@ -112,11 +112,21 @@ module.exports = (sequelize, DataTypes) => {
       type: BOOLEAN,
       defaultValue: false,
     },
+    createdBy: {
+      type: STRING,
+      allowNull: false,
+      references: {
+        model: 'Users',
+        key: 'id'
+      }
+    },
     createdAt: DATE,
     updatedAt: DATE,
   }, {});
   Sessions.associate = function(models) {
     // associations can be defined here
+    Sessions.belongsTo(models.Users, { foreignKey: 'trainerId', as: 'trainer' })
+    Sessions.belongsTo(models.Users, { foreignKey: 'createdBy', as: 'sessionCreatedBy' })
   };
   return Sessions;
 };

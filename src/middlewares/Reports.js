@@ -13,7 +13,7 @@ export default class ReportMiddleware {
   static async validateData(req, res, next) {
     try {
       const schema = Joi.object().keys({
-        session: Joi.string().trim().min(3).required(),
+        sessionId: Joi.string().trim().min(3).required(),
         images: Joi.array().items(Joi.string()).optional(),
         numberOfMale: Joi.number().optional(),
         numberOfFemale: Joi.number().optional(),

@@ -17,7 +17,7 @@ export default class SessionMiddleware {
         materials: Joi.string().trim().min(3).required(),
         date: Joi.date().min(new Date()).required(),
         time: Joi.string().trim().required(),
-        trainer: Joi.string().trim().min(3).optional(),
+        trainerId: Joi.string().trim().min(3).optional(),
         language: Joi.string().trim().optional(),
         country: Joi.string().trim().min(3).required(),
         state: Joi.string().trim().min(3).required(),
@@ -33,7 +33,6 @@ export default class SessionMiddleware {
         audienceExpertLevel: Joi.string().trim().min(3).required(),
         natureOfTraining: Joi.string().trim().min(3).required(),
         photoWorthy: Joi.boolean().optional(),
-        createdBy: Joi.string().trim().optional(),
       });
 
       await schema.validate(req.body, { abortEarly: false })

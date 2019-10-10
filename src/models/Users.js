@@ -13,14 +13,14 @@ module.exports = (sequelize, DataTypes) => {
       type: ENUM('trainer', 'partner', 'admin', 'super admin'),
       allowNull: false,
     },
-    partner: {
+    partnerId: {
       type: STRING,
       references: {
         model: 'Users',
         key: 'id'
       },
     },
-    admin: {
+    adminId: {
       type: STRING,
       references: {
         model: 'Users',
@@ -58,6 +58,7 @@ module.exports = (sequelize, DataTypes) => {
     country: STRING,
     state: STRING,
     community: STRING,
+    fcmToken: STRING,
     isDeleted: {
       type: BOOLEAN,
       defaultValue: false,
@@ -67,6 +68,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Users.associate = function(models) {
     // associations can be defined here
+    Users.belongsTo(models.Users, { foreignKey: 'partnerId', as: 'partner' })
+    Users.belongsTo(models.Users, { foreignKey: 'adminId', as: 'admin' })
   };
   return Users;
 };

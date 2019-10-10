@@ -14,11 +14,19 @@ module.exports = {
         type: ENUM('trainer', 'partner', 'admin', 'super admin'),
         allowNull: false,
       },
-      partner: {
+      partnerId: {
         type: STRING,
+        references: {
+          model: 'Users',
+          key: 'id'
+        }
       },
-      admin: {
+      adminId: {
         type: STRING,
+        references: {
+          model: 'Users',
+          key: 'id'
+        }
       },
       firstName: {
         type: STRING,
@@ -51,6 +59,7 @@ module.exports = {
       country: STRING,
       state: STRING,
       community: STRING,
+      fcmToken: STRING,
       isDeleted: {
         type: BOOLEAN,
         defaultValue: false,

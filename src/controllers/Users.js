@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable consistent-return */
 import db from '../models';
@@ -13,20 +14,20 @@ export default class UserController {
       const { hash, salt, auth: { type, id } } = req.data;
       const userId = await generateID(res, Users);
       const userType = req.body.type;
-      const partnerID = req.body.partner;
+      const partnerID = req.body.partnerId;
 
       if ((type === 'admin' || type === 'super admin') && userType === 'trainer' && !partnerID) return incompleteDataError(res, 'partner is required');
 
-      let partner = '';
-      let admin = null;
+      let partnerId = '';
+      let adminId = null;
       if (type === 'admin' || type === 'super admin') {
-        partner = req.body.partner;
-        admin = id;
-      } else partner = id;
+        partnerId = req.body.partnerId;
+        adminId = id;
+      } else partnerId = id;
 
       await Users
         .create({
-          ...req.body, hash, salt, id: userId, partner, admin,
+          ...req.body, hash, salt, id: userId, partnerId, adminId,
         })
         .then(async (data) => {
           const token = await generateToken(res, data.toJSON());
@@ -47,7 +48,18 @@ export default class UserController {
       const { email, password } = req.body;
 
       await Users
-        .findOne({ where: { email, password, isDeleted: false } })
+        .findOne({
+          where: { email, password, isDeleted: false },
+          include: [{
+            model: db.Users,
+            as: 'admin',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Users,
+            as: 'partner',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }],
+        })
         .then(async (data) => {
           if (data === null) return notFoundError(res, 'Email or Password is incorrect');
 
@@ -58,6 +70,51 @@ export default class UserController {
             error: false,
           });
         })
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async getOne(req, res) {
+    try {
+      const { id } = req.params;
+
+      await Users
+        .findOne({
+          where: { id, isDeleted: false },
+          include: [{
+            model: db.Users,
+            as: 'admin',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Users,
+            as: 'partner',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }],
+        })
+        .then((data) => res.status(200).send({
+          data,
+          message: 'User fetched Successfully',
+          error: false,
+        }))
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async updateUser(req, res) {
+    try {
+      const { id } = req.params;
+
+      await Users
+        .update({ ...req.body }, { returning: true, where: { id } })
+        .then(([num, rows]) => res.status(200).send({
+          data: rows[0],
+          message: 'User updated Successfully',
+          error: false,
+        }))
         .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);

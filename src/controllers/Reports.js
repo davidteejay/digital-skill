@@ -15,7 +15,7 @@ export default class ReportController {
         .create({
           ...req.body,
           id: reportId,
-          trainer: id,
+          trainerId: id,
           images,
         })
         .then((data) => res.status(200).send({

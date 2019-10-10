@@ -26,9 +26,13 @@ module.exports = {
         type: TIME,
         allowNull: false,
       },
-      trainer: {
+      trainerId: {
         type: STRING,
         allowNull: false,
+        references: {
+          model: 'Users',
+          key: 'id'
+        }
       },
       language: {
         type: STRING,
@@ -102,6 +106,13 @@ module.exports = {
       isDeleted: {
         type: BOOLEAN,
         defaultValue: false,
+      },
+      createdBy: {
+        type: STRING,
+        references: {
+          model: 'Users',
+          key: 'id'
+        }
       },
       createdAt: {
         allowNull: false,

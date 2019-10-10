@@ -10,7 +10,18 @@ export default class SessionController {
   static async getAll(req, res) {
     try {
       await Sessions
-        .findAll({ where: { ...req.params, isDeleted: false } })
+        .findAll({
+          where: { ...req.params, isDeleted: false },
+          include: [{
+            model: db.Users,
+            as: 'trainer',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Users,
+            as: 'sessionCreatedBy',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }],
+        })
         .then((data) => res.status(200).send({
           data,
           message: 'Sessions Fetched Successfully',
@@ -30,7 +41,7 @@ export default class SessionController {
       await Sessions
         .create({
           ...req.body,
-          trainer: type === 'trainer' ? id : req.body.trainer,
+          trainerId: type === 'trainer' ? id : req.body.trainerId,
           createdBy: id,
           id: sessionId,
         })

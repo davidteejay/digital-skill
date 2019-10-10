@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       unique: true,
       primaryKey: true
     },
-    trainer: {
+    trainerId: {
       type: STRING,
       allowNull: false,
       references: {
@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id'
       }
     },
-    session: {
+    sessionId: {
       type: STRING,
       allowNull: false,
       references: {
@@ -28,9 +28,9 @@ module.exports = (sequelize, DataTypes) => {
     images: {
       type: STRING,
       allowNull: false,
-      // get: function () {
-      //   return JSON.parse(this.getDataValue('images'))
-      // },
+      get: function () {
+        return JSON.parse(this.getDataValue('images'))
+      },
       set: function (val) {
         return this.setDataValue('images', JSON.stringify(val))
       }
@@ -56,6 +56,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Reports.associate = function(models) {
     // associations can be defined here
+    Reports.belongsTo(models.Users, { foreignKey: 'trainerId', as: 'trainer' })
+    Reports.belongsTo(models.Sessions, { foreignKey: 'sessionId', as: 'session' })
   };
   return Reports;
 };

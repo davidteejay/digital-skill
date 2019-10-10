@@ -13,6 +13,42 @@ module.exports = {
       phone: '07038125957',
       createdAt: new Date(),
       updatedAt: new Date()
+    }, {
+      id: '000002',
+      type: 'admin',
+      firstName: 'Chibuokem',
+      lastName: 'Onyekwelu',
+      email: 'admin1@gmail.com',
+      password: '00000000',
+      sex: 'male',
+      phone: '07038125957',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }, {
+      id: '000003',
+      type: 'partner',
+      firstName: 'Chibuokem',
+      lastName: 'Onyekwelu',
+      email: 'partner1@gmail.com',
+      password: '00000000',
+      sex: 'male',
+      phone: '07038125957',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      adminId: '000002'
+    }, {
+      id: '000004',
+      type: 'trainer',
+      firstName: 'Chibuokem',
+      lastName: 'Onyekwelu',
+      email: 'trainer1@gmail.com',
+      password: '00000000',
+      sex: 'male',
+      phone: '07038125957',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      adminId: '000002',
+      partnerId: '000003'
     }], {});
   },
 
