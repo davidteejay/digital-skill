@@ -72,11 +72,39 @@ export default class SessionMiddleware {
 
   static async checkIfUserHasAccess(req, res, next) {
     try {
-      const { auth: { type } } = req.data;
+      const { auth: { type, id }, session: { partnerId } } = req.data;
 
-      if (type === 'partner' || type === 'admin' || type === 'super admin') return next();
+      if ((type === 'partner' && partnerId === id) || type === 'admin' || type === 'super admin') return next();
 
       return accessDenied(res, 'You don\'t access to this feature');
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async checkIfUserCanAccept(req, res, next) {
+    try {
+      const { auth: { id, type }, session: { trainerId, accepted } } = req.data;
+
+      if (type !== 'trainer') return accessDenied(res, 'Only the assigned trainer can accept a session');
+      if (trainerId !== id) return accessDenied(res, 'You don\'t have access to this session');
+      if (accepted) return accessDenied(res, 'You already accepted this session');
+
+      return next();
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async checkIfUserCanView(req, res, next) {
+    try {
+      const { auth: { id, type }, session: { trainerId, partnerId, assessorId } } = req.data;
+
+      if (type === 'partner' && partnerId !== id) return accessDenied(res, 'You don\'t have access to this session');
+      if (type === 'trainer' && trainerId !== id) return accessDenied(res, 'You don\'t have access to this session');
+      if (type === 'assessor' && assessorId !== id) return accessDenied(res, 'You don\'t have access to this session');
+
+      return next();
     } catch (err) {
       return serverError(res, err.message);
     }

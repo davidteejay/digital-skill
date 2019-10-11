@@ -12,6 +12,7 @@
     "db:migrate:undo:all": "./node_modules/.bin/sequelize db:migrate:undo:all",
     "db:migrate:undo": "./node_modules/.bin/sequelize db:migrate:undo",
     "db:seed": "./node_modules/.bin/sequelize db:seed:all",
+    "db:seed:undo": "./node_modules/.bin/sequelize db:seed:undo:all",
     "sync": "git push origin HEAD && git push origin2 HEAD"
   },
   "keywords": [],

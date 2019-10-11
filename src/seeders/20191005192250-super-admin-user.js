@@ -49,6 +49,28 @@ module.exports = {
       updatedAt: new Date(),
       adminId: '000002',
       partnerId: '000003'
+    }, {
+      id: '000005',
+      type: 'assessor',
+      firstName: 'Chibuokem',
+      lastName: 'Onyekwelu',
+      email: 'assessor1@gmail.com',
+      password: '00000000',
+      sex: 'male',
+      phone: '07038125957',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }, {
+      id: '000006',
+      type: 'assessor manager',
+      firstName: 'Chibuokem',
+      lastName: 'Onyekwelu',
+      email: 'chibuokem2007@gmail.com',
+      password: '00000000',
+      sex: 'male',
+      phone: '07038125957',
+      createdAt: new Date(),
+      updatedAt: new Date(),
     }], {});
   },
 

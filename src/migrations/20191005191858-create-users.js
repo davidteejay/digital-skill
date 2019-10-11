@@ -11,7 +11,7 @@ module.exports = {
         primaryKey: true
       },
       type: {
-        type: ENUM('trainer', 'partner', 'admin', 'super admin'),
+        type: ENUM('trainer', 'partner', 'admin', 'super admin', 'assessor', 'assessor manager'),
         allowNull: false,
       },
       partnerId: {

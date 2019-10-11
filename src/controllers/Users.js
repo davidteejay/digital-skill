@@ -6,7 +6,7 @@ import generateToken from '../helpers/generateToken';
 import generateID from '../helpers/generateID';
 import { serverError, notFoundError, incompleteDataError } from '../helpers/errors';
 
-const { Users } = db;
+const { Users, Reports } = db;
 
 export default class UserController {
   static async addUser(req, res) {
@@ -67,6 +67,35 @@ export default class UserController {
           return res.status(200).send({
             data: { ...data.toJSON(), token },
             message: 'Login Successful',
+            error: false,
+          });
+        })
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async getDashboardData(req, res) {
+    try {
+      const { auth: { id } } = req.data;
+
+      await Reports
+        .findAll({ where: { trainerId: id } })
+        .then(async (data) => {
+          let numberOfMale = 0;
+          let numberOfFemale = 0;
+          let numberOfGMB = 0;
+
+          await data.forEach((report) => {
+            numberOfFemale += report.numberOfFemale;
+            numberOfMale += report.numberOfMale;
+            numberOfGMB += report.numberOfGMB;
+          });
+
+          return res.status(200).send({
+            data: { numberOfFemale, numberOfGMB, numberOfMale },
+            message: 'Dashboard Data fetched',
             error: false,
           });
         })

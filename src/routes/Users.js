@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.post('/login', UserController.login);
 router.post('/add', AuthMiddleware.validateToken, UserMiddleware.checkIfUserHasAccess, UserMiddleware.validateData, UserMiddleware.checkIfEmailExists, UserMiddleware.encryptPassword, UserController.addUser);
+router.get('/dashboard', AuthMiddleware.validateToken, UserController.getDashboardData);
 
 router
   .route('/:id')

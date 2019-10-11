@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import express from 'express';
 
 import UploadMiddleware from '../middlewares/Upload';
@@ -7,6 +8,7 @@ import ReportController from '../controllers/Reports';
 
 const router = express.Router();
 
-router.post('/add', AuthMiddleware.validateToken, ReportMiddleware.validateData, ReportMiddleware.checkIfSessionExists, UploadMiddleware.uploadFiles, ReportMiddleware.changeSessionStatus, ReportController.addReport);
+router.post('/add', AuthMiddleware.validateToken, ReportMiddleware.validateData, ReportMiddleware.checkIfSessionExists, UploadMiddleware.uploadFiles, ReportController.addReport);
+// router.post('/add', AuthMiddleware.validateToken, ReportMiddleware.validateData, ReportMiddleware.checkIfSessionExists, UploadMiddleware.uploadFiles, ReportMiddleware.changeSessionStatus, ReportController.addReport);
 
 export default router;

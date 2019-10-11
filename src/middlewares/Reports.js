@@ -57,10 +57,10 @@ export default class ReportMiddleware {
 
   static async checkIfSessionExists(req, res, next) {
     try {
-      const { session } = req.body;
+      const { sessionId } = req.body;
 
       await Sessions
-        .findByPk(session)
+        .findByPk(sessionId)
         .then((data) => {
           if (data === null) {
             return notFoundError(res, 'Session Not Found');
@@ -81,12 +81,12 @@ export default class ReportMiddleware {
 
   static async changeSessionStatus(req, res, next) {
     try {
-      const { session } = req.body;
+      const { sessionId } = req.body;
 
       await Sessions
         .update(
           { trainerStatus: 'waiting' },
-          { where: { id: session } },
+          { where: { id: sessionId } },
         )
         .then(() => next())
         .catch((err) => serverError(res, err.message));

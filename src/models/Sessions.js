@@ -33,6 +33,13 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id'
       }
     },
+    assessorId: {
+      type: STRING,
+      references: {
+        model: 'Users',
+        key: 'id'
+      }
+    },
     language: {
       type: STRING,
       defaultValue: 'english',
@@ -59,9 +66,9 @@ module.exports = (sequelize, DataTypes) => {
     location: {
       type: STRING,
       allowNull: false,
-      get: function(){
-        return JSON.parse(this.getDataValue('location'))
-      },
+      // get: function(){
+      //   return JSON.parse(this.getDataValue('location'))
+      // },
       set: function (val) {
         return this.setDataValue('location', JSON.stringify(val))
       }
@@ -86,6 +93,10 @@ module.exports = (sequelize, DataTypes) => {
       type: BOOLEAN,
       defaultValue: false,
     },
+    accepted: {
+      type: BOOLEAN,
+      defaultValue: false,
+    },
     trainerStatus: {
       type: ENUM('no_action', 'waiting', 'done', 'failed'),
       defaultValue: 'waiting',
@@ -98,10 +109,7 @@ module.exports = (sequelize, DataTypes) => {
       type: ENUM('no_action', 'waiting', 'done', 'failed'),
       defaultValue: 'waiting',
     },
-    clockStatus: {
-      type: ENUM('clocked in', 'clocked out'),
-      defaultValue: 'clocked out',
-    },
+    clockStatus: ENUM('clocked in', 'clocked out'),
     clockInTime: {
       type: DATE,
     },
@@ -127,6 +135,9 @@ module.exports = (sequelize, DataTypes) => {
     // associations can be defined here
     Sessions.belongsTo(models.Users, { foreignKey: 'trainerId', as: 'trainer' })
     Sessions.belongsTo(models.Users, { foreignKey: 'createdBy', as: 'sessionCreatedBy' })
+    Sessions.belongsTo(models.Users, { foreignKey: 'assessorId', as: 'assessor' })
+
+    Sessions.hasMany(models.Reports, { foreignKey: 'sessionId', as: 'reports' })
   };
   return Sessions;
 };

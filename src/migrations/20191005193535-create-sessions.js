@@ -34,6 +34,13 @@ module.exports = {
           key: 'id'
         }
       },
+      assessorId: {
+        type: STRING,
+        references: {
+          model: 'Users',
+          key: 'id'
+        }
+      },
       language: {
         type: STRING,
         defaultValue: 'english',
@@ -81,6 +88,10 @@ module.exports = {
         type: BOOLEAN,
         defaultValue: false,
       },
+      accepted: {
+        type: BOOLEAN,
+        defaultValue: false,
+      },
       trainerStatus: {
         type: ENUM('no_action', 'waiting', 'done', 'failed'),
         defaultValue: 'waiting',
@@ -91,12 +102,9 @@ module.exports = {
       },
       partnerStatus: {
         type: ENUM('no_action', 'waiting', 'done', 'failed'),
-        defaultValue: 'waiting',
+        defaultValue: 'no_action',
       },
-      clockStatus: {
-        type: ENUM('clocked in', 'clocked out'),
-        defaultValue: 'clocked out',
-      },
+      clockStatus: ENUM('clocked in', 'clocked out'),
       clockInTime: {
         type: DATE,
       },
