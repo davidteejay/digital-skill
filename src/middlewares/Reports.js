@@ -94,4 +94,20 @@ export default class ReportMiddleware {
       return serverError(res, err.message);
     }
   }
+
+  static async updateSession(req, res, next) {
+    try {
+      const { sessionId } = req.body;
+
+      await Sessions
+        .update(
+          { hasReport: true },
+          { where: { id: sessionId } },
+        )
+        .then(() => next())
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
 }

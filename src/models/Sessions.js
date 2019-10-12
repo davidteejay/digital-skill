@@ -33,6 +33,14 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id'
       }
     },
+    partnerId: {
+      type: STRING,
+      allowNull: false,
+      references: {
+        model: 'Users',
+        key: 'id'
+      }
+    },
     assessorId: {
       type: STRING,
       references: {
@@ -110,11 +118,11 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 'waiting',
     },
     clockStatus: ENUM('clocked in', 'clocked out'),
-    clockInTime: {
-      type: DATE,
-    },
-    clockOutTime: {
-      type: DATE,
+    clockInTime: DATE,
+    clockOutTime: DATE,
+    hasReport: {
+      type: BOOLEAN,
+      defaultValue: false,
     },
     isDeleted: {
       type: BOOLEAN,
@@ -134,6 +142,7 @@ module.exports = (sequelize, DataTypes) => {
   Sessions.associate = function(models) {
     // associations can be defined here
     Sessions.belongsTo(models.Users, { foreignKey: 'trainerId', as: 'trainer' })
+    Sessions.belongsTo(models.Users, { foreignKey: 'partnerId', as: 'partner' })
     Sessions.belongsTo(models.Users, { foreignKey: 'createdBy', as: 'sessionCreatedBy' })
     Sessions.belongsTo(models.Users, { foreignKey: 'assessorId', as: 'assessor' })
 

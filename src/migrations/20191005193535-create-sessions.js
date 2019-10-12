@@ -34,6 +34,14 @@ module.exports = {
           key: 'id'
         }
       },
+      partnerId: {
+        type: STRING,
+        allowNull: false,
+        references: {
+          model: 'Users',
+          key: 'id'
+        }
+      },
       assessorId: {
         type: STRING,
         references: {
@@ -110,6 +118,10 @@ module.exports = {
       },
       clockOutTime: {
         type: DATE,
+      },
+      hasReport: {
+        type: BOOLEAN,
+        defaultValue: false,
       },
       isDeleted: {
         type: BOOLEAN,

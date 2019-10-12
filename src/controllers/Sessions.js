@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */
 import db from '../models';
@@ -47,6 +48,90 @@ export default class SessionController {
     }
   }
 
+  static async getWithReports(req, res) {
+    try {
+      let params = {};
+      const { auth: { type, id } } = req.data;
+
+      if (type === 'partner') params = { partnerId: id };
+      if (type === 'trainer') params = { trainerId: id };
+      if (type === 'assessor') params = { assessorId: id };
+
+      await Sessions
+        .findAll({
+          where: {
+            ...req.params, ...params, hasReport: true, isDeleted: false,
+          },
+          include: [{
+            model: db.Users,
+            as: 'trainer',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Users,
+            as: 'sessionCreatedBy',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Users,
+            as: 'assessor',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Reports,
+            as: 'reports',
+          }],
+        })
+        .then((data) => res.status(200).send({
+          data,
+          message: 'Sessions Fetched Successfully',
+          error: false,
+        }))
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async getWithoutReports(req, res) {
+    try {
+      let params = {};
+      const { auth: { type, id } } = req.data;
+
+      if (type === 'partner') params = { partnerId: id };
+      if (type === 'trainer') params = { trainerId: id };
+      if (type === 'assessor') params = { assessorId: id };
+
+      await Sessions
+        .findAll({
+          where: {
+            ...req.params, ...params, hasReport: false, isDeleted: false,
+          },
+          include: [{
+            model: db.Users,
+            as: 'trainer',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Users,
+            as: 'sessionCreatedBy',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Users,
+            as: 'assessor',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Reports,
+            as: 'reports',
+          }],
+        })
+        .then((data) => res.status(200).send({
+          data,
+          message: 'Sessions Fetched Successfully',
+          error: false,
+        }))
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
   static async getOne(req, res) {
     try {
       const { id } = req.params;
@@ -65,9 +150,6 @@ export default class SessionController {
             model: db.Users,
             as: 'assessor',
             attributes: ['id', 'email', 'firstName', 'lastName'],
-          }, {
-            model: db.Reports,
-            as: 'reports',
           }],
         })
         .then((data) => res.status(200).send({
@@ -117,7 +199,7 @@ export default class SessionController {
 
   static async schedule(req, res) {
     try {
-      const { auth: { type, id } } = req.data;
+      const { auth: { type, id, partnerId } } = req.data;
       const sessionId = await generateID(res, Sessions);
 
       const date = new Date(req.body.date).getTime();
@@ -129,6 +211,11 @@ export default class SessionController {
         .create({
           ...req.body,
           trainerId: type === 'trainer' ? id : req.body.trainerId,
+          partnerId: type === 'trainer'
+            ? partnerId
+            : type === 'partner'
+              ? id
+              : req.body.partnerStatus,
           createdBy: id,
           id: sessionId,
           accepted: type === 'trainer',
