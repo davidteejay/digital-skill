@@ -15,9 +15,11 @@ export default class ReportMiddleware {
       const schema = Joi.object().keys({
         sessionId: Joi.string().trim().min(3).required(),
         images: Joi.array().items(Joi.string()).optional(),
-        numberOfMale: Joi.number().optional(),
-        numberOfFemale: Joi.number().optional(),
+        numberOfMale: Joi.number().required(),
+        numberOfFemale: Joi.number().required(),
+        totalNumber: Joi.number().required(),
         numberOfGMB: Joi.number().optional(),
+        quote: Joi.string().min(3).required(),
       });
 
       await schema.validate(req.body, { abortEarly: false })

@@ -6,6 +6,7 @@ import UserController from '../controllers/Users';
 
 const router = express.Router();
 
+router.get('/', AuthMiddleware.validateToken, UserMiddleware.checkIfUserHasAccess, UserController.getAll);
 router.post('/login', UserController.login);
 router.post('/add', AuthMiddleware.validateToken, UserMiddleware.checkIfUserHasAccess, UserMiddleware.validateData, UserMiddleware.checkIfEmailExists, UserMiddleware.encryptPassword, UserController.addUser);
 router.get('/dashboard', AuthMiddleware.validateToken, UserController.getDashboardData);

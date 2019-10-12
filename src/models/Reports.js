@@ -47,6 +47,14 @@ module.exports = (sequelize, DataTypes) => {
       type: INTEGER,
       defaultValue: 0,
     },
+    totalNumber: {
+      type: INTEGER,
+      defaultValue: 0,
+    },
+    quote: {
+      type: STRING,
+      allowNull: false,
+    },
     isDeleted: {
       type: BOOLEAN,
       defaultValue: false,

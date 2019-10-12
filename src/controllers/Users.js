@@ -17,6 +17,7 @@ export default class UserController {
       const partnerID = req.body.partnerId;
 
       if ((type === 'admin' || type === 'super admin') && userType === 'trainer' && !partnerID) return incompleteDataError(res, 'partner is required');
+      if (type === 'assessor manager' && userType !== 'assessor') return incompleteDataError(res, 'You can only add an assessor');
 
       let partnerId = '';
       let adminId = null;
@@ -99,6 +100,39 @@ export default class UserController {
             error: false,
           });
         })
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async getAll(req, res) {
+    try {
+      const { auth: { type, id } } = req.data;
+
+      let params = {};
+
+      if (type === 'partner') params = { partnerId: id };
+      if (type === 'assessor manager') params = { type: 'assessor' };
+
+      await Users
+        .findAll({
+          where: { ...params, isDeleted: false },
+          include: [{
+            model: db.Users,
+            as: 'admin',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Users,
+            as: 'partner',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }],
+        })
+        .then((data) => res.status(200).send({
+          data,
+          message: 'Users fetched Successfully',
+          error: false,
+        }))
         .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);

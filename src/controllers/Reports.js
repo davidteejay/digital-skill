@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 import db from '../models';
-import { serverError } from '../helpers/errors';
+import { serverError, incompleteDataError } from '../helpers/errors';
 import generateID from '../helpers/generateID';
 
 const { Reports } = db;
@@ -10,6 +10,10 @@ export default class ReportController {
     try {
       const { auth: { id }, images } = req.data;
       const reportId = await generateID(res, Reports);
+
+      const { numberOfMale, numberOfFemale, totalNumber } = req.body;
+
+      if (totalNumber !== numberOfFemale + numberOfMale) return incompleteDataError(res, 'total number must be the sum of total male and total female');
 
       await Reports
         .create({

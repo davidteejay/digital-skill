@@ -45,7 +45,7 @@ export default class UserMiddleware {
     try {
       const { auth: { type } } = req.data;
 
-      if (type === 'partner' || type === 'admin' || type === 'super admin') return next();
+      if (type === 'partner' || type === 'admin' || type === 'super admin' || type === 'assessor manager') return next();
 
       return accessDenied(res, 'You don\'t access to this feature');
     } catch (err) {
