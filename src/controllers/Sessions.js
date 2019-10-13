@@ -60,7 +60,7 @@ export default class SessionController {
       await Sessions
         .findAll({
           where: {
-            ...req.params, ...params, hasReport: true, isDeleted: false,
+            ...req.params, ...params, accepted: true, trainerStatus: 'done', hasReport: true, isDeleted: false,
           },
           include: [{
             model: db.Users,
@@ -102,7 +102,7 @@ export default class SessionController {
       await Sessions
         .findAll({
           where: {
-            ...req.params, ...params, hasReport: false, isDeleted: false,
+            ...req.params, ...params, accepted: true, trainerStatus: 'done', hasReport: false, isDeleted: false,
           },
           include: [{
             model: db.Users,
@@ -219,7 +219,8 @@ export default class SessionController {
           createdBy: id,
           id: sessionId,
           accepted: type === 'trainer',
-          partnerStatus: type === 'trainer' ? 'waiting' : 'no_action',
+          partnerStatus: type === 'partner' ? 'waiting' : 'no_action',
+          trainerStatus: type === 'partner' ? 'done' : 'waiting',
         })
         .then((data) => res.status(200).send({
           data,
