@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */
@@ -37,11 +38,22 @@ export default class SessionController {
             as: 'reports',
           }],
         })
-        .then((data) => res.status(200).send({
-          data,
-          message: 'Sessions Fetched Successfully',
-          error: false,
-        }))
+        .then(async (data) => {
+          const sessions = [];
+          data.forEach((session) => {
+            session = {
+              ...session.toJSON(),
+              location: JSON.parse(session.location),
+            };
+            sessions.push(session);
+          });
+
+          return res.status(200).send({
+            data: sessions,
+            message: 'Sessions Fetched Successfully',
+            error: false,
+          });
+        })
         .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);
@@ -79,11 +91,22 @@ export default class SessionController {
             as: 'reports',
           }],
         })
-        .then((data) => res.status(200).send({
-          data,
-          message: 'Sessions Fetched Successfully',
-          error: false,
-        }))
+        .then(async (data) => {
+          const sessions = [];
+          data.forEach((session) => {
+            session = {
+              ...session.toJSON(),
+              location: JSON.parse(session.location),
+            };
+            sessions.push(session);
+          });
+
+          return res.status(200).send({
+            data: sessions,
+            message: 'Sessions Fetched Successfully',
+            error: false,
+          });
+        })
         .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);
@@ -121,11 +144,22 @@ export default class SessionController {
             as: 'reports',
           }],
         })
-        .then((data) => res.status(200).send({
-          data,
-          message: 'Sessions Fetched Successfully',
-          error: false,
-        }))
+        .then(async (data) => {
+          const sessions = [];
+          data.forEach((session) => {
+            session = {
+              ...session.toJSON(),
+              location: JSON.parse(session.location),
+            };
+            sessions.push(session);
+          });
+
+          return res.status(200).send({
+            data: sessions,
+            message: 'Sessions Fetched Successfully',
+            error: false,
+          });
+        })
         .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);
@@ -153,7 +187,10 @@ export default class SessionController {
           }],
         })
         .then((data) => res.status(200).send({
-          data,
+          data: {
+            ...data.toJSON(),
+            location: JSON.parse(data.location),
+          },
           message: 'Sessions Fetched Successfully',
           error: false,
         }))

@@ -1,3 +1,4 @@
+/* eslint-disable radix */
 /* eslint-disable consistent-return */
 import db from '../models';
 import { serverError, incompleteDataError } from '../helpers/errors';
@@ -12,10 +13,10 @@ export default class ReportController {
       const reportId = await generateID(res, Reports);
 
       const {
-        numberOfMale, numberOfFemale, totalNumber, location,
+        numberOfMale, numberOfFemale, totalNumber,
       } = req.body;
 
-      if (totalNumber !== numberOfFemale + numberOfMale) return incompleteDataError(res, 'total number must be the sum of total male and total female');
+      if (parseInt(totalNumber) !== parseInt(numberOfFemale) + parseInt(numberOfMale)) return incompleteDataError(res, 'total number must be the sum of total male and total female');
 
       await Reports
         .create({
@@ -26,8 +27,7 @@ export default class ReportController {
         })
         .then((data) => res.status(200).send({
           data: {
-            ...data,
-            location,
+            ...data.toJSON(),
             images,
           },
           message: 'Report sent successfully',
