@@ -237,6 +237,7 @@ export default class SessionController {
   static async schedule(req, res) {
     try {
       const { auth: { type, id, partnerId } } = req.data;
+      const { location } = req.body;
       const sessionId = await generateID(res, Sessions);
 
       const date = new Date(req.body.date).getTime();
@@ -260,7 +261,10 @@ export default class SessionController {
           trainerStatus: type === 'partner' ? 'done' : 'waiting',
         })
         .then((data) => res.status(200).send({
-          data,
+          data: {
+            ...data.toJSON(),
+            location,
+          },
           message: 'Session Scheduled Successfully',
           error: false,
         }))
