@@ -11,7 +11,9 @@ export default class ReportController {
       const { auth: { id }, images } = req.data;
       const reportId = await generateID(res, Reports);
 
-      const { numberOfMale, numberOfFemale, totalNumber } = req.body;
+      const {
+        numberOfMale, numberOfFemale, totalNumber, location,
+      } = req.body;
 
       if (totalNumber !== numberOfFemale + numberOfMale) return incompleteDataError(res, 'total number must be the sum of total male and total female');
 
@@ -23,7 +25,11 @@ export default class ReportController {
           images,
         })
         .then((data) => res.status(200).send({
-          data,
+          data: {
+            ...data,
+            location,
+            images,
+          },
           message: 'Report sent successfully',
           error: false,
         }))
