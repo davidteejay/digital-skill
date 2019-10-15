@@ -49,7 +49,7 @@ export default class SessionController {
           });
 
           return res.status(200).send({
-            data: sessions,
+            data: sessions.sort((a, b) => b.createdAt - a.createdAt),
             message: 'Sessions Fetched Successfully',
             error: false,
           });
@@ -102,7 +102,7 @@ export default class SessionController {
           });
 
           return res.status(200).send({
-            data: sessions,
+            data: sessions.sort((a, b) => b.createdAt - a.createdAt),
             message: 'Sessions Fetched Successfully',
             error: false,
           });
@@ -155,7 +155,7 @@ export default class SessionController {
           });
 
           return res.status(200).send({
-            data: sessions,
+            data: sessions.sort((a, b) => b.createdAt - a.createdAt),
             message: 'Sessions Fetched Successfully',
             error: false,
           });
