@@ -16,7 +16,7 @@ export default class UserController {
       const userType = req.body.type;
       const partnerID = req.body.partnerId;
 
-      if ((type === 'admin' || type === 'super admin') && userType === 'trainer' && !partnerID) return incompleteDataError(res, 'partner is required');
+      if ((type === 'admin' || type === 'super admin') && userType === 'trainer' && !partnerID) return incompleteDataError(res, 'partnerId is required');
       if (type === 'assessor manager' && userType !== 'assessor') return incompleteDataError(res, 'You can only add an assessor');
 
       let partnerId = '';
