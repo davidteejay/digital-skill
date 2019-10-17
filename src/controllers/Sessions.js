@@ -321,6 +321,7 @@ export default class SessionController {
       const { id } = req.params;
 
       let update = {};
+      if (type === 'trainer') update = { accepted: false };
       if (type === 'partner') update = { trainerStatus: 'failed' };
       else if (type === 'admin') update = { partnerStatus: 'failed' };
       else update = { adminStatus: 'failed' };

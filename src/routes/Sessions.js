@@ -14,7 +14,7 @@ router.get('/without-reports', AuthMiddleware.validateToken, SessionController.g
 router.post('/schedule', AuthMiddleware.validateToken, SessionMiddleware.validateData, SessionController.schedule);
 router.post('/accept/:id', AuthMiddleware.validateToken, SessionMiddleware.checkIfIdExists, SessionMiddleware.checkIfUserCanAccept, SessionController.accept);
 router.post('/approve/:id', AuthMiddleware.validateToken, SessionMiddleware.checkIfIdExists, SessionMiddleware.checkIfUserHasAccess, SessionController.approve);
-router.post('/reject/:id', AuthMiddleware.validateToken, SessionMiddleware.checkIfIdExists, SessionMiddleware.checkIfUserHasAccess, SessionController.reject);
+router.post('/reject/:id', AuthMiddleware.validateToken, SessionMiddleware.checkIfIdExists, SessionController.reject);
 router.post('/clockin/:id', AuthMiddleware.validateToken, SessionMiddleware.checkIfIdExists, SessionMiddleware.checkIfUserCanClockIn, SessionMiddleware.checkIfSessionIsClockedIn, SessionController.clockIn);
 router.post('/clockout/:id', AuthMiddleware.validateToken, SessionMiddleware.checkIfIdExists, SessionMiddleware.checkIfSessionIsClockedOut, SessionController.clockOut);
 

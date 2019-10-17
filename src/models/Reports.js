@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const { DATE, STRING, BOOLEAN, INTEGER } = DataTypes;
+  const { DATE, TIME, STRING, BOOLEAN, INTEGER } = DataTypes;
 
   const Reports = sequelize.define('Reports', {
     id: {
@@ -53,6 +53,14 @@ module.exports = (sequelize, DataTypes) => {
     },
     quote: {
       type: STRING,
+      allowNull: false,
+    },
+    startTime: {
+      type: TIME,
+      allowNull: false,
+    },
+    endTime: {
+      type: TIME,
       allowNull: false,
     },
     isDeleted: {

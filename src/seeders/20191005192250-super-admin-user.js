@@ -35,7 +35,8 @@ module.exports = {
       phone: '07038125957',
       createdAt: new Date(),
       updatedAt: new Date(),
-      adminId: '000002'
+      adminId: '000002',
+      organizationId: '000001'
     }, {
       id: '000004',
       type: 'trainer',
@@ -48,7 +49,8 @@ module.exports = {
       createdAt: new Date(),
       updatedAt: new Date(),
       adminId: '000002',
-      partnerId: '000003'
+      partnerId: '000003',
+      organizationId: '000001'
     }, {
       id: '000005',
       type: 'assessor',

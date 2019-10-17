@@ -14,6 +14,10 @@ module.exports = {
         type: ENUM('trainer', 'partner', 'admin', 'super admin', 'assessor', 'assessor manager'),
         allowNull: false,
       },
+      expertiseLevel: {
+        type: ENUM('beginner', 'intermediate', 'expert'),
+        defaultValue: 'beginner',
+      },
       partnerId: {
         type: STRING,
         references: {
@@ -27,6 +31,13 @@ module.exports = {
           model: 'Users',
           key: 'id'
         }
+      },
+      organizationId: {
+        type: STRING,
+        // references: {
+        //   model: 'Organizations',
+        //   key: 'id'
+        // }
       },
       firstName: {
         type: STRING,
@@ -60,6 +71,10 @@ module.exports = {
       state: STRING,
       community: STRING,
       fcmToken: STRING,
+      isApproved: {
+        type: BOOLEAN,
+        defaultValue: true,
+      },
       isDeleted: {
         type: BOOLEAN,
         defaultValue: false,

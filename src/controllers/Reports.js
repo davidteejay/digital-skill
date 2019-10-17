@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable radix */
 /* eslint-disable consistent-return */
 import db from '../models';
@@ -31,6 +32,23 @@ export default class ReportController {
             images,
           },
           message: 'Report sent successfully',
+          error: false,
+        }))
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async updateReport(req, res) {
+    try {
+      const { id } = req.params;
+
+      await Reports
+        .update({ ...req.body }, { returning: true, where: { id } })
+        .then(([num, rows]) => res.status(200).send({
+          data: rows[0],
+          message: 'Report updated Successfully',
           error: false,
         }))
         .catch((err) => serverError(res, err.message));

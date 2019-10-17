@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       type: ENUM('trainer', 'partner', 'admin', 'super admin', 'assessor', 'assessor manager'),
       allowNull: false,
     },
+    expertiseLevel: ENUM('beginner', 'intermediate', 'expert'),
     partnerId: {
       type: STRING,
       references: {
@@ -26,6 +27,13 @@ module.exports = (sequelize, DataTypes) => {
         model: 'Users',
         key: 'id'
       },
+    },
+    organizationId: {
+      type: STRING,
+      references: {
+        model: 'Organizations',
+        key: 'id'
+      }
     },
     firstName: {
       type: STRING,
@@ -59,6 +67,10 @@ module.exports = (sequelize, DataTypes) => {
     state: STRING,
     community: STRING,
     fcmToken: STRING,
+    isApproved: {
+      type: BOOLEAN,
+      defaultValue: true,
+    },
     isDeleted: {
       type: BOOLEAN,
       defaultValue: false,
@@ -70,6 +82,7 @@ module.exports = (sequelize, DataTypes) => {
     // associations can be defined here
     Users.belongsTo(models.Users, { foreignKey: 'partnerId', as: 'partner' })
     Users.belongsTo(models.Users, { foreignKey: 'adminId', as: 'admin' })
+    Users.belongsTo(models.Organizations, { foreignKey: 'organizationId', as: 'organization' })
   };
   return Users;
 };

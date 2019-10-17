@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    const { DATE, STRING, BOOLEAN, ARRAY, INTEGER } = Sequelize;
+    const { DATE, TIME, STRING, BOOLEAN, ARRAY, INTEGER } = Sequelize;
 
     return queryInterface.createTable('Reports', {
       id: {
@@ -53,6 +53,14 @@ module.exports = {
       },
       quote: {
         type: STRING,
+        allowNull: false,
+      },
+      startTime: {
+        type: TIME,
+        allowNull: false,
+      },
+      endTime: {
+        type: TIME,
         allowNull: false,
       },
       isDeleted: {

@@ -9,6 +9,10 @@ import ReportController from '../controllers/Reports';
 const router = express.Router();
 
 router.post('/add', AuthMiddleware.validateToken, ReportMiddleware.validateData, ReportMiddleware.checkIfSessionExists, UploadMiddleware.uploadFiles, ReportMiddleware.updateSession, ReportController.addReport);
+
+router
+  .route('/:id')
+  .put(AuthMiddleware.validateToken, ReportMiddleware.checkIfIdExists, ReportController.updateReport);
 // router.post('/add', AuthMiddleware.validateToken, ReportMiddleware.validateData, ReportMiddleware.checkIfSessionExists, UploadMiddleware.uploadFiles, ReportMiddleware.changeSessionStatus, ReportController.addReport);
 
 export default router;

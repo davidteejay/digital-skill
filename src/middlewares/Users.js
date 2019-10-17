@@ -1,7 +1,6 @@
 /* eslint-disable eqeqeq */
 /* eslint-disable consistent-return */
 import Joi from 'joi';
-import crypto from 'crypto';
 
 import db from '../models';
 
@@ -91,25 +90,6 @@ export default class UserMiddleware {
           return next();
         })
         .catch((err) => serverError(res, err.message));
-    } catch (err) {
-      return serverError(res, err.message);
-    }
-  }
-
-  static async encryptPassword(req, res, next) {
-    try {
-      const { password } = req.body;
-
-      const salt = await crypto.randomBytes(16).toString('hex');
-      const hash = await crypto.pbkdf2Sync(password, salt, 10000, 512, 'sha512').toString('hex');
-
-      req.data = {
-        ...req.data,
-        hash,
-        salt,
-      };
-
-      return next();
     } catch (err) {
       return serverError(res, err.message);
     }

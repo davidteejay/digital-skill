@@ -11,7 +11,7 @@ const { Users, Reports } = db;
 export default class UserController {
   static async addUser(req, res) {
     try {
-      const { hash, salt, auth: { type, id } } = req.data;
+      const { auth: { type, id } } = req.data;
       const userId = await generateID(res, Users);
       const userType = req.body.type;
       const partnerID = req.body.partnerId;
@@ -29,7 +29,11 @@ export default class UserController {
 
       await Users
         .create({
-          ...req.body, hash, salt, id: userId, partnerId, adminId,
+          ...req.body,
+          id: userId,
+          partnerId,
+          adminId,
+          isApproved: !(type === 'partner' && userType === 'trainer'),
         })
         .then(async (data) => {
           const token = await generateToken(res, data.toJSON());
@@ -60,6 +64,9 @@ export default class UserController {
             model: db.Users,
             as: 'partner',
             attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Organizations,
+            as: 'organization',
           }],
         })
         .then(async (data) => {
@@ -118,7 +125,7 @@ export default class UserController {
 
       await Users
         .findAll({
-          where: { ...params, isDeleted: false },
+          where: { ...req.params, ...params, isDeleted: false },
           include: [{
             model: db.Users,
             as: 'admin',
@@ -127,6 +134,9 @@ export default class UserController {
             model: db.Users,
             as: 'partner',
             attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Organizations,
+            as: 'organization',
           }],
         })
         .then((data) => res.status(200).send({
@@ -155,6 +165,9 @@ export default class UserController {
             model: db.Users,
             as: 'partner',
             attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Organizations,
+            as: 'organization',
           }],
         })
         .then((data) => res.status(200).send({
@@ -177,6 +190,23 @@ export default class UserController {
         .then(([num, rows]) => res.status(200).send({
           data: rows[0],
           message: 'User updated Successfully',
+          error: false,
+        }))
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async approveUser(req, res) {
+    try {
+      const { id } = req.params;
+
+      await Users
+        .update({ isApproved: true }, { returning: true, where: { id } })
+        .then(([num, rows]) => res.status(200).send({
+          data: rows[0],
+          message: 'User approved Successfully',
           error: false,
         }))
         .catch((err) => serverError(res, err.message));
