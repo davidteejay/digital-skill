@@ -73,7 +73,7 @@ export default class SessionController {
       await Sessions
         .findAll({
           where: {
-            ...req.params, ...params, accepted: true, trainerStatus: 'done', hasReport: true, isDeleted: false,
+            ...req.params, ...params, accepted: true, status: 'approved', hasReport: true, isDeleted: false,
           },
           include: [{
             model: db.Users,
@@ -127,7 +127,7 @@ export default class SessionController {
       await Sessions
         .findAll({
           where: {
-            ...req.params, ...params, accepted: true, trainerStatus: 'done', hasReport: false, isDeleted: false,
+            ...req.params, ...params, accepted: true, status: 'approved', hasReport: false, isDeleted: false,
           },
           include: [{
             model: db.Users,
