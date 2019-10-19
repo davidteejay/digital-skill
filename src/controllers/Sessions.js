@@ -43,6 +43,7 @@ export default class SessionController {
           data.forEach((session) => {
             session = {
               ...session.toJSON(),
+              media: session.media ? JSON.parse(session.media) : [],
               location: JSON.parse(session.location),
             };
             sessions.push(session);
@@ -96,6 +97,7 @@ export default class SessionController {
           data.forEach((session) => {
             session = {
               ...session.toJSON(),
+              media: session.media ? JSON.parse(session.media) : [],
               location: JSON.parse(session.location),
             };
             sessions.push(session);
@@ -149,6 +151,7 @@ export default class SessionController {
           data.forEach((session) => {
             session = {
               ...session.toJSON(),
+              media: session.media ? JSON.parse(session.media) : [],
               location: JSON.parse(session.location),
             };
             sessions.push(session);
@@ -189,6 +192,7 @@ export default class SessionController {
         .then((data) => res.status(200).send({
           data: {
             ...data.toJSON(),
+            media: data.media ? JSON.parse(data.media) : [],
             location: JSON.parse(data.location),
           },
           message: 'Sessions Fetched Successfully',
@@ -280,10 +284,10 @@ export default class SessionController {
       const { id } = req.params;
 
       await Sessions
-        .update({ accepted: true, partnerStatus: 'waiting' }, { returning: true, where: { id } })
+        .update({ accepted: true }, { returning: true, where: { id } })
         .then(([num, rows]) => res.status(200).send({
           data: rows[0],
-          message: 'Session approved Successfully',
+          message: 'Session accepted Successfully',
           error: false,
         }))
         .catch((err) => serverError(res, err.message));
@@ -294,16 +298,10 @@ export default class SessionController {
 
   static async approve(req, res) {
     try {
-      const { auth: { type } } = req.data;
       const { id } = req.params;
 
-      let update = {};
-      if (type === 'partner') update = { trainerStatus: 'done', partnerStatus: 'waiting' };
-      else if (type === 'admin') update = { partnerStatus: 'done', adminStatus: 'waiting' };
-      else update = { adminStatus: 'done' };
-
       await Sessions
-        .update(update, { returning: true, where: { id } })
+        .update({ status: 'approved' }, { returning: true, where: { id } })
         .then(([num, rows]) => res.status(200).send({
           data: rows[0],
           message: 'Session approved Successfully',
@@ -322,12 +320,27 @@ export default class SessionController {
 
       let update = {};
       if (type === 'trainer') update = { accepted: false };
-      if (type === 'partner') update = { trainerStatus: 'failed' };
-      else if (type === 'admin') update = { partnerStatus: 'failed' };
-      else update = { adminStatus: 'failed' };
+      if (type === 'partner') update = { status: 'rejected' };
 
       await Sessions
-        .update(update, { returning: true, where: { id } })
+        .update({ status: 'rejected' }, { returning: true, where: { id } })
+        .then(([num, rows]) => res.status(200).send({
+          data: rows[0],
+          message: 'Session rejected Successfully',
+          error: false,
+        }))
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async cancel(req, res) {
+    try {
+      const { id } = req.params;
+
+      await Sessions
+        .update({ status: 'cancelled' }, { returning: true, where: { id } })
         .then(([num, rows]) => res.status(200).send({
           data: rows[0],
           message: 'Session rejected Successfully',
@@ -371,6 +384,25 @@ export default class SessionController {
         .then(([num, rows]) => res.status(200).send({
           data: rows[0],
           message: 'Session Clocked out Successfully',
+          error: false,
+        }))
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async uploadMedia(req, res) {
+    try {
+      const { id } = req.params;
+      const previousMedia = req.data.session.media ? JSON.parse(req.data.session.media) : [];
+      const { media } = req.body;
+
+      await Sessions
+        .update({ media: [...previousMedia, ...media] }, { returning: true, where: { id } })
+        .then(([num, rows]) => res.status(200).send({
+          data: rows[0],
+          message: 'Media added Successfully',
           error: false,
         }))
         .catch((err) => serverError(res, err.message));

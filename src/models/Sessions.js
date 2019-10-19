@@ -81,6 +81,12 @@ module.exports = (sequelize, DataTypes) => {
         return this.setDataValue('location', JSON.stringify(val))
       }
     },
+    media: {
+      type: STRING,
+      set: function (val) {
+        return this.setDataValue('media', JSON.stringify(val))
+      }
+    },
     audienceSelection: {
       type: STRING,
       allowNull: false,
@@ -105,17 +111,9 @@ module.exports = (sequelize, DataTypes) => {
       type: BOOLEAN,
       defaultValue: false,
     },
-    trainerStatus: {
-      type: ENUM('no_action', 'waiting', 'done', 'failed'),
-      defaultValue: 'waiting',
-    },
-    adminStatus: {
-      type: ENUM('no_action', 'waiting', 'done', 'failed'),
-      defaultValue: 'no_action',
-    },
-    partnerStatus: {
-      type: ENUM('no_action', 'waiting', 'done', 'failed'),
-      defaultValue: 'waiting',
+    status: {
+      type: ENUM('awaiting approval', 'approved', 'rejected', 'cancelled'),
+      defaultValue: 'awaiting approval',
     },
     clockStatus: ENUM('clocked in', 'clocked out'),
     clockInTime: DATE,

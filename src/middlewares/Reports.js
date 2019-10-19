@@ -3,7 +3,7 @@
 import Joi from 'joi';
 
 import {
-  serverError, incompleteDataError, notFoundError,
+  serverError, incompleteDataError, notFoundError, accessDenied,
 } from '../helpers/errors';
 import db from '../models';
 
@@ -14,12 +14,14 @@ export default class ReportMiddleware {
     try {
       const schema = Joi.object().keys({
         sessionId: Joi.string().trim().min(3).required(),
-        images: Joi.array().items(Joi.string()).optional(),
+        // images: Joi.array().items(Joi.string()).optional(),
         numberOfMale: Joi.number().required(),
         numberOfFemale: Joi.number().required(),
         totalNumber: Joi.number().required(),
         numberOfGMB: Joi.number().optional(),
         quote: Joi.string().min(3).required(),
+        startTime: Joi.string().required(),
+        endTime: Joi.string().required(),
       });
 
       await schema.validate(req.body, { abortEarly: false })
@@ -108,6 +110,42 @@ export default class ReportMiddleware {
         )
         .then(() => next())
         .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async checkIfUserHasAccess(req, res, next) {
+    try {
+      const { auth: { type, id }, report: { partnerId } } = req.data;
+
+      if ((type === 'partner' && id === partnerId) || type === 'admin') return next();
+
+      return accessDenied(res);
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async checkIfUserCanRequestEdit(req, res, next) {
+    try {
+      const { auth: { type, id }, report: { partnerId } } = req.data;
+
+      if (type === 'partner' && id === partnerId) return next();
+
+      return accessDenied(res);
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async checkIfUserCanFlag(req, res, next) {
+    try {
+      const { auth: { type } } = req.data;
+
+      if (type === 'admin') return next();
+
+      return accessDenied(res);
     } catch (err) {
       return serverError(res, err.message);
     }

@@ -76,6 +76,9 @@ module.exports = {
         type: STRING,
         allowNull: false,
       },
+      media: {
+        type: STRING,
+      },
       audienceSelection: {
         type: STRING,
         allowNull: false,
@@ -100,17 +103,9 @@ module.exports = {
         type: BOOLEAN,
         defaultValue: false,
       },
-      trainerStatus: {
-        type: ENUM('no_action', 'waiting', 'done', 'failed'),
-        defaultValue: 'waiting',
-      },
-      adminStatus: {
-        type: ENUM('no_action', 'waiting', 'done', 'failed'),
-        defaultValue: 'no_action',
-      },
-      partnerStatus: {
-        type: ENUM('no_action', 'waiting', 'done', 'failed'),
-        defaultValue: 'no_action',
+      status: {
+        type: ENUM('awaiting approval', 'approved', 'rejected', 'cancelled'),
+        defaultValue: 'awaiting approval',
       },
       clockStatus: ENUM('clocked in', 'clocked out'),
       clockInTime: {

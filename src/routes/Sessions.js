@@ -15,8 +15,10 @@ router.post('/schedule', AuthMiddleware.validateToken, SessionMiddleware.validat
 router.post('/accept/:id', AuthMiddleware.validateToken, SessionMiddleware.checkIfIdExists, SessionMiddleware.checkIfUserCanAccept, SessionController.accept);
 router.post('/approve/:id', AuthMiddleware.validateToken, SessionMiddleware.checkIfIdExists, SessionMiddleware.checkIfUserHasAccess, SessionController.approve);
 router.post('/reject/:id', AuthMiddleware.validateToken, SessionMiddleware.checkIfIdExists, SessionController.reject);
+router.post('/cancel/:id', AuthMiddleware.validateToken, SessionMiddleware.checkIfIdExists, SessionMiddleware.checkIfUserCanView, SessionController.cancel);
 router.post('/clockin/:id', AuthMiddleware.validateToken, SessionMiddleware.checkIfIdExists, SessionMiddleware.checkIfUserCanClockIn, SessionMiddleware.checkIfSessionIsClockedIn, SessionController.clockIn);
 router.post('/clockout/:id', AuthMiddleware.validateToken, SessionMiddleware.checkIfIdExists, SessionMiddleware.checkIfSessionIsClockedOut, SessionController.clockOut);
+router.post('/add-media/:id', AuthMiddleware.validateToken, SessionMiddleware.checkIfIdExists, SessionMiddleware.checkIfUserCanView, SessionController.uploadMedia);
 
 router
   .route('/:id')

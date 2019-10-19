@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    const { DATE, TIME, STRING, BOOLEAN, ARRAY, INTEGER } = Sequelize;
+    const { DATE, TIME, STRING, BOOLEAN, ENUM, INTEGER } = Sequelize;
 
     return queryInterface.createTable('Reports', {
       id: {
@@ -24,6 +24,14 @@ module.exports = {
           key: 'id'
         }
       },
+      partnerId: {
+        type: STRING,
+        allowNull: false,
+        references: {
+          model: 'Users',
+          key: 'id'
+        }
+      },
       sessionId: {
         type: STRING,
         allowNull: false,
@@ -32,9 +40,9 @@ module.exports = {
           key: 'id'
         }
       },
-      images: {
-        type: STRING,
-      },
+      // images: {
+      //   type: STRING,
+      // },
       numberOfMale: {
         type: INTEGER,
         defaultValue: 0,
@@ -50,6 +58,14 @@ module.exports = {
       totalNumber: {
         type: INTEGER,
         defaultValue: 0,
+      },
+      partnerStatus: {
+        type: ENUM('pending', 'requested edit', 'approved', 'rejected'),
+        defaultValue: 'pending',
+      },
+      adminStatus: {
+        type: ENUM('pending', 'flagged', 'approved', 'rejected'),
+        defaultValue: 'pending',
       },
       quote: {
         type: STRING,

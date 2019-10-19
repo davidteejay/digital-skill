@@ -33,6 +33,7 @@ export default class SessionMiddleware {
         audienceExpertLevel: Joi.string().trim().min(3).required(),
         natureOfTraining: Joi.string().trim().min(3).required(),
         photoWorthy: Joi.boolean().optional(),
+        media: Joi.array().items(Joi.string()).optional(),
       });
 
       await schema.validate(req.body, { abortEarly: false })
@@ -74,7 +75,7 @@ export default class SessionMiddleware {
     try {
       const { auth: { type, id }, session: { partnerId } } = req.data;
 
-      if ((type === 'partner' && partnerId === id) || type === 'admin' || type === 'super admin') return next();
+      if ((type === 'partner' && partnerId === id)) return next();
 
       return accessDenied(res, 'You don\'t access to this feature');
     } catch (err) {
