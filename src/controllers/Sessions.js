@@ -170,6 +170,65 @@ export default class SessionController {
     }
   }
 
+  static async filterByDate(req, res) {
+    try {
+      let params = {};
+      const { auth: { type, id } } = req.data;
+      const { startDate, endDate } = req.query;
+
+      if (type === 'partner') params = { partnerId: id };
+      if (type === 'trainer') params = { trainerId: id };
+      if (type === 'assessor') params = { assessorId: id };
+
+      await Sessions
+        .findAll({
+          where: { ...req.params, ...params, isDeleted: false },
+          include: [{
+            model: db.Users,
+            as: 'trainer',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Users,
+            as: 'sessionCreatedBy',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Users,
+            as: 'assessor',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Reports,
+            as: 'reports',
+          }],
+        })
+        .then(async (data) => {
+          const sessions = [];
+          data.forEach((session) => {
+            const start = new Date(startDate).getTime();
+            const end = new Date(endDate).getTime();
+            const date = new Date(session.date).getTime();
+
+            if (start < date && date < end) {
+              session = {
+                ...session.toJSON(),
+                media: session.media ? JSON.parse(session.media) : [],
+                location: JSON.parse(session.location),
+              };
+              sessions.push(session);
+            }
+          });
+
+          return res.status(200).send({
+            data: sessions.sort((a, b) => b.createdAt - a.createdAt),
+            message: 'Sessions Fetched Successfully',
+            error: false,
+          });
+        })
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
   static async getOne(req, res) {
     try {
       const { id } = req.params;
@@ -260,7 +319,7 @@ export default class SessionController {
       if (type === 'trainer') ids = [adminId, partnerId];
       else ids = [adminId, req.body.trainerId];
 
-      if (date < today + (4 * 24 * 60 * 60 * 100)) return incompleteDataError(res, 'A session must be scheduled at leat 4 days before the date');
+      if (type !== 'admin' && date < today + (4 * 24 * 60 * 60 * 100)) return incompleteDataError(res, 'A session must be scheduled at leat 4 days before the date');
 
       await Sessions
         .create({

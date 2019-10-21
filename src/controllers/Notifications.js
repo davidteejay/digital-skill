@@ -11,7 +11,7 @@ export default class NotificationController {
       const { auth: { id } } = req.data;
 
       await Notifications
-        .findAll()
+        .findAll({ where: { isDeleted: false } })
         .then(async (data) => {
           const notifications = [];
           await data.forEach((notification) => {

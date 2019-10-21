@@ -10,6 +10,7 @@ const router = express.Router();
 router.get('/', AuthMiddleware.validateToken, SessionController.getAll);
 router.get('/with-reports', AuthMiddleware.validateToken, SessionController.getWithReports);
 router.get('/without-reports', AuthMiddleware.validateToken, SessionController.getWithoutReports);
+router.get('/filterByDate', AuthMiddleware.validateToken, SessionController.filterByDate);
 
 router.post('/schedule', AuthMiddleware.validateToken, SessionMiddleware.validateData, SessionController.schedule);
 router.post('/accept/:id', AuthMiddleware.validateToken, SessionMiddleware.checkIfIdExists, SessionMiddleware.checkIfUserCanAccept, SessionController.accept);

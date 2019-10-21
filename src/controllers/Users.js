@@ -9,6 +9,21 @@ import { serverError, notFoundError, incompleteDataError } from '../helpers/erro
 const { Users, Reports } = db;
 
 export default class UserController {
+  static async refreshToken(req, res) {
+    try {
+      const { auth } = req.data;
+
+      const token = await generateToken(res, auth);
+      return res.status(200).send({
+        data: { token },
+        message: 'Token refreshed Successful',
+        error: false,
+      });
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
   static async addUser(req, res) {
     try {
       const { auth: { type, id } } = req.data;

@@ -7,6 +7,7 @@ import UserController from '../controllers/Users';
 const router = express.Router();
 
 router.get('/', AuthMiddleware.validateToken, UserMiddleware.checkIfUserHasAccess, UserController.getAll);
+router.get('/refresh-token', AuthMiddleware.validateToken, UserController.refreshToken);
 router.post('/login', UserController.login);
 router.post('/approve/:id', AuthMiddleware.validateToken, UserMiddleware.checkIfIdExists, UserController.approveUser);
 router.post('/add', AuthMiddleware.validateToken, UserMiddleware.checkIfUserHasAccess, UserMiddleware.validateData, UserMiddleware.checkIfEmailExists, UserController.addUser);
