@@ -5,6 +5,7 @@
 import db from '../models';
 import { serverError, incompleteDataError } from '../helpers/errors';
 import generateID from '../helpers/generateID';
+import sendNotification from '../helpers/sendNotification';
 
 const { Sessions } = db;
 
@@ -207,14 +208,18 @@ export default class SessionController {
   static async update(req, res) {
     try {
       const { id } = req.params;
+      const { auth: { partnerId, adminId } } = req.data;
 
       await Sessions
         .update({ ...req.body }, { returning: true, where: { id } })
-        .then(([num, rows]) => res.status(200).send({
-          data: rows[0],
-          message: 'Session updated Successfully',
-          error: false,
-        }))
+        .then(async ([num, rows]) => {
+          await sendNotification(res, [partnerId, adminId], 'Session Updated', `Session ${id} has been updated`);
+          return res.status(200).send({
+            data: rows[0],
+            message: 'Session updated Successfully',
+            error: false,
+          });
+        })
         .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);
@@ -240,12 +245,20 @@ export default class SessionController {
 
   static async schedule(req, res) {
     try {
-      const { auth: { type, id, partnerId } } = req.data;
+      const {
+        auth: {
+          type, id, partnerId, adminId,
+        },
+      } = req.data;
       const { location } = req.body;
       const sessionId = await generateID(res, Sessions);
 
       const date = new Date(req.body.date).getTime();
       const today = new Date().getTime();
+
+      let ids = [];
+      if (type === 'trainer') ids = [adminId, partnerId];
+      else ids = [adminId, req.body.trainerId];
 
       if (date < today + (4 * 24 * 60 * 60 * 100)) return incompleteDataError(res, 'A session must be scheduled at leat 4 days before the date');
 
@@ -257,21 +270,24 @@ export default class SessionController {
             ? partnerId
             : type === 'partner'
               ? id
-              : req.body.partnerStatus,
+              : req.body.partnerId,
           createdBy: id,
           id: sessionId,
           accepted: type === 'trainer',
           partnerStatus: type === 'partner' ? 'waiting' : 'no_action',
           trainerStatus: type === 'partner' ? 'done' : 'waiting',
         })
-        .then((data) => res.status(200).send({
-          data: {
-            ...data.toJSON(),
-            location,
-          },
-          message: 'Session Scheduled Successfully',
-          error: false,
-        }))
+        .then(async (data) => {
+          await sendNotification(res, ids, 'New Session', 'A New Session has been scheduled');
+          return res.status(200).send({
+            data: {
+              ...data.toJSON(),
+              location,
+            },
+            message: 'Session Scheduled Successfully',
+            error: false,
+          });
+        })
         .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);
@@ -280,16 +296,19 @@ export default class SessionController {
 
   static async accept(req, res) {
     try {
-      const { auth: { type } } = req.data;
+      const { auth: { partnerId, adminId } } = req.data;
       const { id } = req.params;
 
       await Sessions
         .update({ accepted: true }, { returning: true, where: { id } })
-        .then(([num, rows]) => res.status(200).send({
-          data: rows[0],
-          message: 'Session accepted Successfully',
-          error: false,
-        }))
+        .then(async ([num, rows]) => {
+          await sendNotification(res, [partnerId, adminId], 'Session Accepted', `Session ${id} has been accepted`);
+          return res.status(200).send({
+            data: rows[0],
+            message: 'Session accepted Successfully',
+            error: false,
+          });
+        })
         .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);
@@ -299,14 +318,18 @@ export default class SessionController {
   static async approve(req, res) {
     try {
       const { id } = req.params;
+      const { auth: { adminId }, session: { trainerId } } = req.data;
 
       await Sessions
         .update({ status: 'approved' }, { returning: true, where: { id } })
-        .then(([num, rows]) => res.status(200).send({
-          data: rows[0],
-          message: 'Session approved Successfully',
-          error: false,
-        }))
+        .then(async ([num, rows]) => {
+          await sendNotification(res, [trainerId, adminId], 'Session Approved', `Session ${id} has been approved`);
+          return res.status(200).send({
+            data: rows[0],
+            message: 'Session approved Successfully',
+            error: false,
+          });
+        })
         .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);
@@ -315,20 +338,19 @@ export default class SessionController {
 
   static async reject(req, res) {
     try {
-      const { auth: { type } } = req.data;
+      const { auth: { adminId, type }, session: { trainerId, partnerId } } = req.data;
       const { id } = req.params;
-
-      let update = {};
-      if (type === 'trainer') update = { accepted: false };
-      if (type === 'partner') update = { status: 'rejected' };
 
       await Sessions
         .update({ status: 'rejected' }, { returning: true, where: { id } })
-        .then(([num, rows]) => res.status(200).send({
-          data: rows[0],
-          message: 'Session rejected Successfully',
-          error: false,
-        }))
+        .then(async ([num, rows]) => {
+          await sendNotification(res, [trainerId, adminId, partnerId], 'Session Rejected', `Session ${id} has been rejected`);
+          return res.status(200).send({
+            data: rows[0],
+            message: 'Session rejected Successfully',
+            error: false,
+          });
+        })
         .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);
@@ -337,15 +359,19 @@ export default class SessionController {
 
   static async cancel(req, res) {
     try {
+      const { auth: { adminId }, session: { trainerId, partnerId } } = req.data;
       const { id } = req.params;
 
       await Sessions
         .update({ status: 'cancelled' }, { returning: true, where: { id } })
-        .then(([num, rows]) => res.status(200).send({
-          data: rows[0],
-          message: 'Session rejected Successfully',
-          error: false,
-        }))
+        .then(async ([num, rows]) => {
+          await sendNotification(res, [trainerId, adminId, partnerId], 'Session Cancelled', `Session ${id} has been cancelled`);
+          return res.status(200).send({
+            data: rows[0],
+            message: 'Session rejected Successfully',
+            error: false,
+          });
+        })
         .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);
