@@ -1,10 +1,10 @@
+/* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
 /* eslint-disable camelcase */
 /* eslint-disable consistent-return */
 import FCM from 'fcm-node';
 import dotenv from 'dotenv';
 
-import { serverError } from './errors';
 import db from '../models';
 
 const { Users, Notifications } = db;
@@ -22,7 +22,7 @@ const sendNotification = async (res, ids, title, message) => {
         title,
         message,
       })
-      .catch((err) => serverError(res, err.message));
+      .catch((err) => console.error(err.message));
 
     const registration_ids = [];
 
@@ -33,7 +33,7 @@ const sendNotification = async (res, ids, title, message) => {
           const { fcmToken } = user;
           if (fcmToken) registration_ids.push(fcmToken);
         })
-        .catch((err) => serverError(res, err.message));
+        .catch((err) => console.error(err.message));
     });
 
     const notification = {
@@ -45,10 +45,10 @@ const sendNotification = async (res, ids, title, message) => {
     };
 
     fcm.send(notification, (err, response) => {
-      if (err) return serverError(res, err);
+      if (err) return console.error(err.message);
     });
   } catch (err) {
-    return serverError(res, err.message);
+    return console.error(err.message);
   }
 };
 
