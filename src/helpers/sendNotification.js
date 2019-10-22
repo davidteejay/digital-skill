@@ -22,7 +22,7 @@ const sendNotification = async (res, ids, title, message) => {
         title,
         message,
       })
-      .catch((err) => console.error(err.message));
+      .catch((err) => console.error(`create notif: ${err.message}`));
 
     const registration_ids = [];
 
@@ -33,7 +33,7 @@ const sendNotification = async (res, ids, title, message) => {
           const { fcmToken } = user;
           if (fcmToken) registration_ids.push(fcmToken);
         })
-        .catch((err) => console.error(err.message));
+        .catch((err) => console.error(`fetch token: ${err.message}`));
     });
 
     const notification = {
@@ -45,10 +45,10 @@ const sendNotification = async (res, ids, title, message) => {
     };
 
     fcm.send(notification, (err, response) => {
-      if (err) return console.error(err.message);
+      if (err) return console.error(`send notif: ${err.message}`);
     });
   } catch (err) {
-    return console.error(err.message);
+    return console.error(`else: ${err.message}`);
   }
 };
 
