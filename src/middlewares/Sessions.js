@@ -18,6 +18,7 @@ export default class SessionMiddleware {
         date: Joi.date().min(new Date()).required(),
         time: Joi.string().trim().required(),
         trainerId: Joi.string().trim().min(3).optional(),
+        partnerId: Joi.string().trim().min(3).optional(),
         language: Joi.string().trim().optional(),
         country: Joi.string().trim().min(3).required(),
         state: Joi.string().trim().min(3).required(),
