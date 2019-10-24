@@ -144,7 +144,7 @@ module.exports = (sequelize, DataTypes) => {
     Sessions.belongsTo(models.Users, { foreignKey: 'createdBy', as: 'sessionCreatedBy' })
     Sessions.belongsTo(models.Users, { foreignKey: 'assessorId', as: 'assessor' })
 
-    Sessions.hasMany(models.Reports, { foreignKey: 'sessionId', as: 'reports' })
+    Sessions.hasOne(models.Reports, { foreignKey: 'sessionId', as: 'report' })
   };
   return Sessions;
 };

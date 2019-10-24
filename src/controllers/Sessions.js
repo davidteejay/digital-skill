@@ -36,7 +36,7 @@ export default class SessionController {
             attributes: ['id', 'email', 'firstName', 'lastName'],
           }, {
             model: db.Reports,
-            as: 'reports',
+            as: 'report',
           }],
         })
         .then(async (data) => {
@@ -90,7 +90,7 @@ export default class SessionController {
             attributes: ['id', 'email', 'firstName', 'lastName'],
           }, {
             model: db.Reports,
-            as: 'reports',
+            as: 'report',
           }],
         })
         .then(async (data) => {
@@ -144,7 +144,7 @@ export default class SessionController {
             attributes: ['id', 'email', 'firstName', 'lastName'],
           }, {
             model: db.Reports,
-            as: 'reports',
+            as: 'report',
           }],
         })
         .then(async (data) => {
@@ -197,17 +197,17 @@ export default class SessionController {
             attributes: ['id', 'email', 'firstName', 'lastName'],
           }, {
             model: db.Reports,
-            as: 'reports',
+            as: 'report',
           }],
         })
         .then(async (data) => {
           const sessions = [];
-          data.forEach((session) => {
+          await data.forEach((session) => {
             const start = new Date(startDate).getTime();
             const end = new Date(endDate).getTime();
             const date = new Date(session.date).getTime();
 
-            if (start < date && date < end) {
+            if (start <= date && date <= end) {
               session = {
                 ...session.toJSON(),
                 media: session.media ? JSON.parse(session.media) : [],
@@ -218,7 +218,7 @@ export default class SessionController {
           });
 
           return res.status(200).send({
-            data: sessions.sort((a, b) => b.createdAt - a.createdAt),
+            data: sessions,
             message: 'Sessions Fetched Successfully',
             error: false,
           });
@@ -274,7 +274,11 @@ export default class SessionController {
         .then(async ([num, rows]) => {
           await sendNotification(res, [partnerId, adminId], 'Session Updated', `Session ${id} has been updated`);
           return res.status(200).send({
-            data: rows[0],
+            data: {
+              ...rows[0].toJSON(),
+              media: rows[0].media ? JSON.parse(rows[0].media) : [],
+              location: JSON.parse(rows[0].location),
+            },
             message: 'Session updated Successfully',
             error: false,
           });
@@ -333,8 +337,7 @@ export default class SessionController {
           createdBy: id,
           id: sessionId,
           accepted: type === 'trainer',
-          partnerStatus: type === 'partner' ? 'waiting' : 'no_action',
-          trainerStatus: type === 'partner' ? 'done' : 'waiting',
+          status: type === 'partner' ? 'approved' : 'awaiting approval',
         })
         .then(async (data) => {
           await sendNotification(res, ids, 'New Session', 'A New Session has been scheduled');
@@ -363,7 +366,11 @@ export default class SessionController {
         .then(async ([num, rows]) => {
           await sendNotification(res, [partnerId, adminId], 'Session Accepted', `Session ${id} has been accepted`);
           return res.status(200).send({
-            data: rows[0],
+            data: {
+              ...rows[0].toJSON(),
+              media: rows[0].media ? JSON.parse(rows[0].media) : [],
+              location: JSON.parse(rows[0].location),
+            },
             message: 'Session accepted Successfully',
             error: false,
           });
@@ -384,7 +391,11 @@ export default class SessionController {
         .then(async ([num, rows]) => {
           await sendNotification(res, [trainerId, adminId], 'Session Approved', `Session ${id} has been approved`);
           return res.status(200).send({
-            data: rows[0],
+            data: {
+              ...rows[0].toJSON(),
+              media: rows[0].media ? JSON.parse(rows[0].media) : [],
+              location: JSON.parse(rows[0].location),
+            },
             message: 'Session approved Successfully',
             error: false,
           });
@@ -405,7 +416,11 @@ export default class SessionController {
         .then(async ([num, rows]) => {
           await sendNotification(res, [trainerId, adminId, partnerId], 'Session Rejected', `Session ${id} has been rejected`);
           return res.status(200).send({
-            data: rows[0],
+            data: {
+              ...rows[0].toJSON(),
+              media: rows[0].media ? JSON.parse(rows[0].media) : [],
+              location: JSON.parse(rows[0].location),
+            },
             message: 'Session rejected Successfully',
             error: false,
           });
@@ -426,7 +441,11 @@ export default class SessionController {
         .then(async ([num, rows]) => {
           await sendNotification(res, [trainerId, adminId, partnerId], 'Session Cancelled', `Session ${id} has been cancelled`);
           return res.status(200).send({
-            data: rows[0],
+            data: {
+              ...rows[0].toJSON(),
+              media: rows[0].media ? JSON.parse(rows[0].media) : [],
+              location: JSON.parse(rows[0].location),
+            },
             message: 'Session rejected Successfully',
             error: false,
           });
@@ -447,7 +466,11 @@ export default class SessionController {
           { returning: true, where: { id } },
         )
         .then(([num, rows]) => res.status(200).send({
-          data: rows[0],
+          data: {
+            ...rows[0].toJSON(),
+            media: rows[0].media ? JSON.parse(rows[0].media) : [],
+            location: JSON.parse(rows[0].location),
+          },
           message: 'Session Clocked in Successfully',
           error: false,
         }))
@@ -467,7 +490,11 @@ export default class SessionController {
           { returning: true, where: { id } },
         )
         .then(([num, rows]) => res.status(200).send({
-          data: rows[0],
+          data: {
+            ...rows[0].toJSON(),
+            media: rows[0].media ? JSON.parse(rows[0].media) : [],
+            location: JSON.parse(rows[0].location),
+          },
           message: 'Session Clocked out Successfully',
           error: false,
         }))
@@ -483,10 +510,16 @@ export default class SessionController {
       const previousMedia = req.data.session.media ? JSON.parse(req.data.session.media) : [];
       const { media } = req.body;
 
+      await media.push(previousMedia);
+
       await Sessions
-        .update({ media: [...previousMedia, ...media] }, { returning: true, where: { id } })
+        .update({ media }, { returning: true, where: { id } })
         .then(([num, rows]) => res.status(200).send({
-          data: rows[0],
+          data: {
+            ...rows[0].toJSON(),
+            media: rows[0].media ? JSON.parse(rows[0].media) : [],
+            location: JSON.parse(rows[0].location),
+          },
           message: 'Media added Successfully',
           error: false,
         }))

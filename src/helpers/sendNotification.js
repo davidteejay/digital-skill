@@ -44,9 +44,11 @@ const sendNotification = async (res, ids, title, message) => {
       },
     };
 
-    fcm.send(notification, (err, response) => {
-      if (err) return console.error(`send notif: ${err.message}`);
-    });
+    if (registration_ids.length > 0) {
+      fcm.send(notification, (err, response) => {
+        if (err) return console.error(`send notif: ${err}`);
+      });
+    }
   } catch (err) {
     return console.error(`else: ${err.message}`);
   }

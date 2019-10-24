@@ -48,7 +48,7 @@ export default class ReportController {
   static async updateReport(req, res) {
     try {
       const { id } = req.params;
-      const { auth: { adminId, partnerId } } = req.params;
+      const { auth: { adminId, partnerId } } = req.data;
 
       await Reports
         .update({ ...req.body }, { returning: true, where: { id } })
