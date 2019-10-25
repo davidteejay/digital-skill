@@ -201,20 +201,24 @@ export default class SessionController {
           }],
         })
         .then(async (data) => {
-          const sessions = [];
-          await data.forEach((session) => {
-            const date = new Date(session.date).getTime();
-            const start = new Date(startDate).getTime();
+          let sessions = [];
+          if (startDate || endDate) {
+            await data.forEach((session) => {
+              const date = new Date(session.date).getTime();
+              const start = new Date(startDate).getTime();
 
-            if (start <= date) {
-              if (endDate) {
-                const end = new Date(endDate).getTime();
-                if (date <= end) sessions.push(session);
-              } else {
-                sessions.push(session);
+              if (start <= date) {
+                if (endDate) {
+                  const end = new Date(endDate).getTime();
+                  if (date <= end) {
+                    sessions.push(session);
+                  }
+                } else {
+                  sessions.push(session);
+                }
               }
-            }
-          });
+            });
+          } else sessions = data;
 
           return res.status(200).send({
             data: sessions,
