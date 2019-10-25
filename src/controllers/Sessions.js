@@ -3,7 +3,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */
 import db from '../models';
-import { serverError, incompleteDataError } from '../helpers/errors';
+import { serverError, accessDenied } from '../helpers/errors';
 import generateID from '../helpers/generateID';
 import sendNotification from '../helpers/sendNotification';
 
@@ -325,8 +325,8 @@ export default class SessionController {
       if (type === 'trainer') ids = [adminId, partnerId];
       else ids = [adminId, req.body.trainerId];
 
-      if (type === 'trainer' && date < today + (4 * 24 * 60 * 60 * 100)) return incompleteDataError(res, 'A session must be scheduled at least 4 days before the date');
-      if (type === 'partner' && date < today + (2 * 24 * 60 * 60 * 100)) return incompleteDataError(res, 'A session must be scheduled at least 2 days before the date');
+      if (type === 'trainer' && date < today + (4 * 24 * 60 * 60 * 100)) return accessDenied(res, 'A session must be scheduled at least 4 days before the date');
+      if (type === 'partner' && date < today + (2 * 24 * 60 * 60 * 100)) return accessDenied(res, 'A session must be scheduled at least 2 days before the date');
 
       await Sessions
         .create({
@@ -340,7 +340,7 @@ export default class SessionController {
           createdBy: id,
           id: sessionId,
           accepted: type === 'trainer',
-          status: type === 'partner' ? 'approved' : 'awaiting approval',
+          status: type === 'partner' || type === 'admin' ? 'approved' : 'awaiting approval',
         })
         .then(async (data) => {
           await sendNotification(res, ids, 'New Session', 'A New Session has been scheduled', sessionId);
@@ -437,9 +437,13 @@ export default class SessionController {
 
   static async cancel(req, res) {
     try {
-      const { auth: { adminId }, session: { trainerId, partnerId } } = req.data;
+      const { auth: { adminId }, session: { trainerId, partnerId, date } } = req.data;
       const { id } = req.params;
       const { comment } = req.body;
+      const sessionDate = new Date(date).getTime();
+      const today = new Date().getTime();
+
+      if ((sessionDate - today) < (12 * 60 * 60 * 100)) return accessDenied(res, 'You can\'t cancel a session less than 12 hours before the session');
 
       await Sessions
         .update({ status: 'cancelled', comment }, { returning: true, where: { id } })
