@@ -140,7 +140,7 @@ export default class UserController {
 
       await Users
         .findAll({
-          where: { ...req.params, ...params, isDeleted: false },
+          where: { ...req.query, ...params, isDeleted: false },
           include: [{
             model: db.Users,
             as: 'admin',
