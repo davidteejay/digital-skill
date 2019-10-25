@@ -15,7 +15,7 @@ export default class SessionMiddleware {
       const schema = Joi.object().keys({
         type: Joi.string().trim().min(3).required(),
         materials: Joi.string().trim().min(3).required(),
-        date: Joi.date().min(new Date()).required(),
+        date: Joi.date().min().required(),
         time: Joi.string().trim().required(),
         trainerId: Joi.string().trim().min(3).optional(),
         partnerId: Joi.string().trim().min(3).optional(),
@@ -114,12 +114,15 @@ export default class SessionMiddleware {
 
   static async checkIfUserCanClockIn(req, res, next) {
     try {
-      const { session: { date } } = req.data;
-      const today = new Date();
+      const { session: { date, time } } = req.data;
 
-      if (today > new Date(date)) return accessDenied(res, 'You can\'t clock in yet');
+      const sessionDate = new Date(`${date}T${time}Z`);
+      const now = new Date().getTime();
+      sessionDate.setHours(sessionDate.getHours() + (sessionDate.getTimezoneOffset() / 60));
 
-      return next();
+      if (now >= sessionDate) return next();
+
+      return accessDenied(res, 'You cannot clock in until it\'s time for the session');
     } catch (err) {
       return serverError(res, err.message);
     }

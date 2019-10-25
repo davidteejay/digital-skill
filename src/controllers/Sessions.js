@@ -327,7 +327,6 @@ export default class SessionController {
 
       if (type === 'trainer' && date < today + (4 * 24 * 60 * 60 * 100)) return incompleteDataError(res, 'A session must be scheduled at least 4 days before the date');
       if (type === 'partner' && date < today + (2 * 24 * 60 * 60 * 100)) return incompleteDataError(res, 'A session must be scheduled at least 2 days before the date');
-      if (type === 'admin' && date < today) return incompleteDataError(res, 'A session cannot be scheduled at a past date');
 
       await Sessions
         .create({
