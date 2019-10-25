@@ -387,12 +387,12 @@ export default class SessionController {
   static async approve(req, res) {
     try {
       const { id } = req.params;
-      const { auth: { adminId }, session: { trainerId } } = req.data;
+      const { auth: { adminId }, session: { trainerId, partnerId } } = req.data;
 
       await Sessions
         .update({ status: 'approved' }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [trainerId, adminId], 'Session Approved', `Session ${id} has been approved`, id);
+          await sendNotification(res, [trainerId, adminId, partnerId], 'Session Approved', `Session ${id} has been approved`, id);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
