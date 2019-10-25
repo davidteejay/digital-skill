@@ -104,12 +104,13 @@ export default class ReportController {
     try {
       const { id } = req.params;
       const { auth: { type, partnerId, adminId }, report: { sessionId, trainerId } } = req.data;
+      const { comment } = req.body;
 
       let update = {};
       let message = '';
       let ids = [];
       if (type === 'partner') {
-        update = { partnerStatus: 'rejected' };
+        update = { partnerStatus: 'rejected', comment };
         message = `Report ${id} for Session ${sessionId} has been rejected by partner`;
         ids = [adminId, trainerId];
       } else {
@@ -138,9 +139,10 @@ export default class ReportController {
     try {
       const { id } = req.params;
       const { auth: { adminId }, report: { sessionId, trainerId } } = req.data;
+      const { comment } = req.body;
 
       await Reports
-        .update({ partnerStatus: 'requested edit' }, { returning: true, where: { id } })
+        .update({ partnerStatus: 'requested edit', comment }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
           await sendNotification(res, [adminId, trainerId], 'Edit Requested', `The partner requested edit for Report ${id} in Session ${sessionId}`);
           return res.status(200).send({
@@ -159,9 +161,10 @@ export default class ReportController {
     try {
       const { id } = req.params;
       const { auth: { partnerId }, report: { sessionId, trainerId } } = req.data;
+      const { comment } = req.body;
 
       await Reports
-        .update({ adminStatus: 'flagged' }, { returning: true, where: { id } })
+        .update({ adminStatus: 'flagged', comment }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
           await sendNotification(res, [partnerId, trainerId], 'Report flagged', `The admin flagged Report ${id} in Session ${sessionId}`);
           return res.status(200).send({

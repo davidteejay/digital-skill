@@ -170,7 +170,7 @@ export default class SessionController {
     }
   }
 
-  static async filterByDate(req, res) {
+  static async filter(req, res) {
     try {
       let params = {};
       const { auth: { type, id } } = req.data;
@@ -203,17 +203,16 @@ export default class SessionController {
         .then(async (data) => {
           const sessions = [];
           await data.forEach((session) => {
-            const start = new Date(startDate).getTime();
-            const end = new Date(endDate).getTime();
             const date = new Date(session.date).getTime();
+            const start = new Date(startDate).getTime();
 
-            if (start <= date && date <= end) {
-              session = {
-                ...session.toJSON(),
-                media: session.media ? JSON.parse(session.media) : [],
-                location: JSON.parse(session.location),
-              };
-              sessions.push(session);
+            if (start <= date) {
+              if (endDate) {
+                const end = new Date(endDate).getTime();
+                if (date <= end) sessions.push(session);
+              } else {
+                sessions.push(session);
+              }
             }
           });
 
@@ -247,6 +246,9 @@ export default class SessionController {
             model: db.Users,
             as: 'assessor',
             attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Reports,
+            as: 'report',
           }],
         })
         .then((data) => res.status(200).send({
@@ -323,7 +325,9 @@ export default class SessionController {
       if (type === 'trainer') ids = [adminId, partnerId];
       else ids = [adminId, req.body.trainerId];
 
-      if (type !== 'admin' && date < today + (4 * 24 * 60 * 60 * 100)) return incompleteDataError(res, 'A session must be scheduled at leat 4 days before the date');
+      if (type === 'trainer' && date < today + (4 * 24 * 60 * 60 * 100)) return incompleteDataError(res, 'A session must be scheduled at least 4 days before the date');
+      if (type === 'partner' && date < today + (2 * 24 * 60 * 60 * 100)) return incompleteDataError(res, 'A session must be scheduled at least 2 days before the date');
+      if (type === 'admin' && date < today) return incompleteDataError(res, 'A session cannot be scheduled at a past date');
 
       await Sessions
         .create({

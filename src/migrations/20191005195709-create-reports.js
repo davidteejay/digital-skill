@@ -40,6 +40,10 @@ module.exports = {
           key: 'id'
         }
       },
+      quote: {
+        type: STRING,
+        allowNull: false,
+      },
       // images: {
       //   type: STRING,
       // },
@@ -67,9 +71,8 @@ module.exports = {
         type: ENUM('pending', 'flagged', 'approved', 'rejected'),
         defaultValue: 'pending',
       },
-      quote: {
+      comment: {
         type: STRING,
-        allowNull: false,
       },
       startTime: {
         type: TIME,

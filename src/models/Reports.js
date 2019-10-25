@@ -43,6 +43,10 @@ module.exports = (sequelize, DataTypes) => {
     //     return this.setDataValue('images', JSON.stringify(val))
     //   }
     // },
+    quote: {
+      type: STRING,
+      allowNull: false,
+    },
     numberOfMale: {
       type: INTEGER,
       defaultValue: 0,
@@ -67,9 +71,8 @@ module.exports = (sequelize, DataTypes) => {
       type: ENUM('pending', 'flagged', 'approved', 'rejected'),
       defaultValue: 'pending',
     },
-    quote: {
+    comment: {
       type: STRING,
-      allowNull: false,
     },
     startTime: {
       type: TIME,
