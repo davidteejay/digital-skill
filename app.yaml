@@ -1,15 +1,11 @@
 env: flex
 runtime: nodejs
+
 beta_settings:
   cloud_sql_instances: digitalskillshub:us-central1:digital-skills
+
 env_variables:
   SECRET: secret
   SENDGRID_KEY: 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
-  CLOUDINARY_CLOUD_NAME: veda
-  CLOUDINARY_API_KEY: 632537659423521
-  CLOUDINARY_API_SECRET: Pmq3Dd-cLPsAW3XW9tRrwIjyXx4
   FCM_SERVER_KEY: AAAATtabi8g:APA91bFvAWz5t9QvXoIerNAvOhj0wJryvDBtNKVv6FJKmx9y59fjU2fFDUyNsaFQ9d4P4sLVKukbbvHeQOGRYNMbNIAsT0YsEsPAhxqEqrt0rS5JXTxyA6YTLm47X9BAz9qs7LlV4aFe
   DB_HOST: /cloudsql/digitalskillshub:us-central1:digital-skills
-  DB_USERNAME: admin
-  DB_PASSWORD: admin
-  DB_DATABASE: digital_skills

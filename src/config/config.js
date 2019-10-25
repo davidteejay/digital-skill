@@ -19,12 +19,14 @@ module.exports = {
     dialect: "postgres"
   },
   production: {
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
+    username: "admin",
+    password: "admin",
+    database: "digital_skills",
+    host: "localhost",
     dialect: "postgres",
+    dialectOptions: {
+      socketPath: "/cloudsql/digitalskillshub:us-central1:digital-skills",
+    },
     logging: false
   }
 };
