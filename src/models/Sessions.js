@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const { DATE, STRING, ENUM, BOOLEAN, DATEONLY, TIME } = DataTypes;
+  const { DATE, STRING, ENUM, BOOLEAN, DATEONLY, TIME, TEXT } = DataTypes;
 
   const Sessions = sequelize.define('Sessions', {
     id: {
@@ -82,7 +82,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     media: {
-      type: STRING,
+      type: TEXT,
       set: function (val) {
         return this.setDataValue('media', JSON.stringify(val))
       }

@@ -274,7 +274,7 @@ export default class SessionController {
       await Sessions
         .update({ ...req.body }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [partnerId, adminId], 'Session Updated', `Session ${id} has been updated`);
+          await sendNotification(res, [partnerId, adminId], 'Session Updated', `Session ${id} has been updated`, id);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
@@ -343,7 +343,7 @@ export default class SessionController {
           status: type === 'partner' ? 'approved' : 'awaiting approval',
         })
         .then(async (data) => {
-          await sendNotification(res, ids, 'New Session', 'A New Session has been scheduled');
+          await sendNotification(res, ids, 'New Session', 'A New Session has been scheduled', sessionId);
           return res.status(200).send({
             data: {
               ...data.toJSON(),
@@ -367,7 +367,7 @@ export default class SessionController {
       await Sessions
         .update({ accepted: true }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [partnerId, adminId], 'Session Accepted', `Session ${id} has been accepted`);
+          await sendNotification(res, [partnerId, adminId], 'Session Accepted', `Session ${id} has been accepted`, id);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
@@ -392,7 +392,7 @@ export default class SessionController {
       await Sessions
         .update({ status: 'approved' }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [trainerId, adminId], 'Session Approved', `Session ${id} has been approved`);
+          await sendNotification(res, [trainerId, adminId], 'Session Approved', `Session ${id} has been approved`, id);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
@@ -417,7 +417,7 @@ export default class SessionController {
       await Sessions
         .update({ status: 'rejected' }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [trainerId, adminId, partnerId], 'Session Rejected', `Session ${id} has been rejected`);
+          await sendNotification(res, [trainerId, adminId, partnerId], 'Session Rejected', `Session ${id} has been rejected`, id);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
@@ -442,7 +442,7 @@ export default class SessionController {
       await Sessions
         .update({ status: 'cancelled' }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [trainerId, adminId, partnerId], 'Session Cancelled', `Session ${id} has been cancelled`);
+          await sendNotification(res, [trainerId, adminId, partnerId], 'Session Cancelled', `Session ${id} has been cancelled`, id);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
@@ -462,21 +462,25 @@ export default class SessionController {
   static async clockIn(req, res) {
     try {
       const { id } = req.params;
+      const { auth: { partnerId, adminId } } = req.data;
 
       await Sessions
         .update(
           { clockInTime: new Date(), clockStatus: 'clocked in' },
           { returning: true, where: { id } },
         )
-        .then(([num, rows]) => res.status(200).send({
-          data: {
-            ...rows[0].toJSON(),
-            media: rows[0].media ? JSON.parse(rows[0].media) : [],
-            location: JSON.parse(rows[0].location),
-          },
-          message: 'Session Clocked in Successfully',
-          error: false,
-        }))
+        .then(async ([num, rows]) => {
+          await sendNotification(res, [adminId, partnerId], 'Session Clocked In', `Session ${id} has been clocked in`, id);
+          return res.status(200).send({
+            data: {
+              ...rows[0].toJSON(),
+              media: rows[0].media ? JSON.parse(rows[0].media) : [],
+              location: JSON.parse(rows[0].location),
+            },
+            message: 'Session Clocked in Successfully',
+            error: false,
+          });
+        })
         .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);
@@ -513,10 +517,12 @@ export default class SessionController {
       const previousMedia = req.data.session.media ? JSON.parse(req.data.session.media) : [];
       const { media } = req.body;
 
-      await media.push(previousMedia);
+      await media.forEach((item) => {
+        previousMedia.push(item);
+      });
 
       await Sessions
-        .update({ media }, { returning: true, where: { id } })
+        .update({ media: previousMedia }, { returning: true, where: { id } })
         .then(([num, rows]) => res.status(200).send({
           data: {
             ...rows[0].toJSON(),

@@ -17,6 +17,10 @@ module.exports = {
       message: {
         type: Sequelize.STRING
       },
+      sessionId: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
       isRead: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,

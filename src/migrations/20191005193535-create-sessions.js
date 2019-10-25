@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    const { DATE, STRING, ENUM, BOOLEAN, DATEONLY, TIME } = Sequelize;
+    const { DATE, STRING, ENUM, BOOLEAN, DATEONLY, TIME, TEXT } = Sequelize;
 
     return queryInterface.createTable('Sessions', {
       id: {
@@ -77,7 +77,7 @@ module.exports = {
         allowNull: false,
       },
       media: {
-        type: STRING,
+        type: TEXT,
       },
       audienceSelection: {
         type: STRING,

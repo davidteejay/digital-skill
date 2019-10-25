@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     title: DataTypes.STRING,
     message: DataTypes.STRING,
+    sessionId: DataTypes.STRING,
     isRead: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,

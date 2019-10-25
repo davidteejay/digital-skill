@@ -21,6 +21,8 @@ export default class NotificationController {
                 title: notification.title,
                 message: notification.message,
                 isRead: notification.isRead,
+                time: notification.createdAt,
+                session: notification.sessionId,
               });
             }
           });
