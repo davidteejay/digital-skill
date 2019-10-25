@@ -25,6 +25,12 @@ module.exports = {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialect: "postgres",
+    // host: '/cloudsql/digitalskillshub:us-central1:digital-skills',
+    // database: 'digital_skills', // Create at step 3
+    // password: 'admin',
+    // user: 'admin',
+    // name: 'digital_skills',
+    // connector: 'postgresql',
     logging: false
   }
 };

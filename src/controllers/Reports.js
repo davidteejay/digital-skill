@@ -56,7 +56,7 @@ export default class ReportController {
       const userId = req.data.auth.id;
 
       await Reports
-        .update({ ...req.body }, { returning: true, where: { id } })
+        .update({ ...req.body, partnerStatus: 'pending', adminStatus: 'pending' }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
           await sendNotification(res, [partnerId, adminId], 'Report Updated', `Report ${id} for Session ${rows[0].sessionId} has been updated`, rows[0].sessionId, userId);
           return res.status(200).send({
