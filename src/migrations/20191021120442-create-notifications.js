@@ -18,7 +18,6 @@ module.exports = {
         type: Sequelize.STRING
       },
       sessionId: {
-        allowNull: false,
         type: Sequelize.STRING
       },
       isRead: {
