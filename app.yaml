@@ -3,10 +3,10 @@ runtime: nodejs
 env_variables:
   SECRET: secret
 
-  DB_USERNAME: llisqeskkpsjnm
-  DB_PASSWORD: 77cbf9a001f16f67762f421a59cfdb5647e6e5edc3913ef05f531991f5f82e2d
-  DB_DATABASE: d3be8scrv9d5jc
-  DB_HOST: ec2-107-21-120-104.compute-1.amazonaws.com
+  DB_USERNAME: digital_skills
+  DB_PASSWORD: admin
+  DB_DATABASE: admin
+  DB_HOST: 35.222.48.49
   DB_PORT: 5432
 
   SENDGRID_KEY: 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
