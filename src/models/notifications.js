@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     performedBy: {
-      type: DataTypes.String,
+      type: DataTypes.STRING,
       allowNull: false,
       references: {
         model: 'Users',

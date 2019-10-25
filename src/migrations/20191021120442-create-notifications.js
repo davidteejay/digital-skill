@@ -22,7 +22,7 @@ module.exports = {
         allowNull: false,
       },
       performedBy: {
-        type: Sequelize.String,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       isRead: {
