@@ -182,7 +182,7 @@ export default class SessionController {
 
       await Sessions
         .findAll({
-          where: { ...req.params, ...params, isDeleted: false },
+          where: { ...req.query, ...params, isDeleted: false },
           include: [{
             model: db.Users,
             as: 'trainer',
