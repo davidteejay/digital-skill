@@ -16,6 +16,7 @@ export default class NotificationController {
           include: [{
             model: db.Users,
             as: 'by',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
           }],
         })
         .then(async (data) => {
@@ -29,6 +30,7 @@ export default class NotificationController {
                 isRead: notification.isRead,
                 time: notification.createdAt,
                 session: notification.sessionId,
+                by: notification.by,
               });
             }
           });
