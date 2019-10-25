@@ -18,11 +18,11 @@ module.exports = {
         type: Sequelize.STRING
       },
       sessionId: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       performedBy: {
-        type: DataTypes.String,
+        type: Sequelize.String,
         allowNull: false,
       },
       isRead: {
