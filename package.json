@@ -14,7 +14,7 @@
     "db:seed": "./node_modules/.bin/sequelize db:seed:all",
     "db:seed:undo": "./node_modules/.bin/sequelize db:seed:undo:all",
     "sync": "git push origin HEAD && git push origin2 HEAD",
-    "gcdfghjkl;p-build": "NODE_ENV=production npm run db:migrate && npm run db:seed"
+    "gcp-build": "NODE_ENV=production npm run db:migrate && npm run db:seed"
   },
   "keywords": [],
   "author": "Chibuokem Onyekwelu",
