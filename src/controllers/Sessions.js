@@ -3,7 +3,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */
 import db from '../models';
-import { serverError, accessDenied } from '../helpers/errors';
+import { serverError, accessDenied, incompleteDataError } from '../helpers/errors';
 import generateID from '../helpers/generateID';
 import sendNotification from '../helpers/sendNotification';
 
@@ -538,9 +538,11 @@ export default class SessionController {
       const previousMedia = req.data.session.media ? JSON.parse(req.data.session.media) : [];
       const { media } = req.body;
 
-      await media.forEach((item) => {
-        previousMedia.push(item);
-      });
+      if (media) {
+        await media.forEach((item) => {
+          previousMedia.push(item);
+        });
+      } else return incompleteDataError(res, 'media is required');
 
       await Sessions
         .update({ media: previousMedia }, { returning: true, where: { id } })
