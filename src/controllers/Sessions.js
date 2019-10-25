@@ -25,15 +25,15 @@ export default class SessionController {
           include: [{
             model: db.Users,
             as: 'trainer',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
+            attributes: ['id', 'email', 'firstName', 'lastName', 'type'],
           }, {
             model: db.Users,
             as: 'sessionCreatedBy',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
+            attributes: ['id', 'email', 'firstName', 'lastName', 'type'],
           }, {
             model: db.Users,
             as: 'assessor',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
+            attributes: ['id', 'email', 'firstName', 'lastName', 'type'],
           }, {
             model: db.Reports,
             as: 'report',
@@ -79,15 +79,15 @@ export default class SessionController {
           include: [{
             model: db.Users,
             as: 'trainer',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
+            attributes: ['id', 'email', 'firstName', 'lastName', 'type'],
           }, {
             model: db.Users,
             as: 'sessionCreatedBy',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
+            attributes: ['id', 'email', 'firstName', 'lastName', 'type'],
           }, {
             model: db.Users,
             as: 'assessor',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
+            attributes: ['id', 'email', 'firstName', 'lastName', 'type'],
           }, {
             model: db.Reports,
             as: 'report',
@@ -133,15 +133,15 @@ export default class SessionController {
           include: [{
             model: db.Users,
             as: 'trainer',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
+            attributes: ['id', 'email', 'firstName', 'lastName', 'type'],
           }, {
             model: db.Users,
             as: 'sessionCreatedBy',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
+            attributes: ['id', 'email', 'firstName', 'lastName', 'type'],
           }, {
             model: db.Users,
             as: 'assessor',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
+            attributes: ['id', 'email', 'firstName', 'lastName', 'type'],
           }, {
             model: db.Reports,
             as: 'report',
@@ -186,15 +186,15 @@ export default class SessionController {
           include: [{
             model: db.Users,
             as: 'trainer',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
+            attributes: ['id', 'email', 'firstName', 'lastName', 'type'],
           }, {
             model: db.Users,
             as: 'sessionCreatedBy',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
+            attributes: ['id', 'email', 'firstName', 'lastName', 'type'],
           }, {
             model: db.Users,
             as: 'assessor',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
+            attributes: ['id', 'email', 'firstName', 'lastName', 'type'],
           }, {
             model: db.Reports,
             as: 'report',
@@ -237,15 +237,15 @@ export default class SessionController {
           include: [{
             model: db.Users,
             as: 'trainer',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
+            attributes: ['id', 'email', 'firstName', 'lastName', 'type'],
           }, {
             model: db.Users,
             as: 'sessionCreatedBy',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
+            attributes: ['id', 'email', 'firstName', 'lastName', 'type'],
           }, {
             model: db.Users,
             as: 'assessor',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
+            attributes: ['id', 'email', 'firstName', 'lastName', 'type'],
           }, {
             model: db.Reports,
             as: 'report',
