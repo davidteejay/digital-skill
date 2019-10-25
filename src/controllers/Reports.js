@@ -33,7 +33,7 @@ export default class ReportController {
           images,
         })
         .then(async (data) => {
-          await sendNotification(res, [partnerId, adminId], 'New Report', `A new report has been sent for Session ${sessionId}`, sessionId);
+          await sendNotification(res, [partnerId, adminId], 'New Report', `A new report has been sent for Session ${sessionId}`, sessionId, id);
           return res.status(200).send({
             data: {
               ...data.toJSON(),
@@ -53,11 +53,12 @@ export default class ReportController {
     try {
       const { id } = req.params;
       const { auth: { adminId, partnerId } } = req.data;
+      const userId = req.data.auth.id;
 
       await Reports
         .update({ ...req.body }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [partnerId, adminId], 'Report Updated', `Report ${id} for Session ${rows[0].sessionId} has been updated`, rows[0].sessionId);
+          await sendNotification(res, [partnerId, adminId], 'Report Updated', `Report ${id} for Session ${rows[0].sessionId} has been updated`, rows[0].sessionId, userId);
           return res.status(200).send({
             data: rows[0],
             message: 'Report updated Successfully',
@@ -79,6 +80,7 @@ export default class ReportController {
           totalNumber, numberOfFemale, numberOfMale, numberOfGMB,
         },
       } = req.data;
+      const userId = req.data.auth.id;
 
       let update = {};
       let message = '';
@@ -120,7 +122,7 @@ export default class ReportController {
       await Reports
         .update(update, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, ids, 'Report Approved', message, sessionId);
+          await sendNotification(res, ids, 'Report Approved', message, sessionId, userId);
           return res.status(200).send({
             data: rows[0],
             message: 'Report approved Successfully',
@@ -138,6 +140,7 @@ export default class ReportController {
       const { id } = req.params;
       const { auth: { type, partnerId, adminId }, report: { sessionId, trainerId } } = req.data;
       const { comment } = req.body;
+      const userId = req.data.auth.id;
 
       let update = {};
       let message = '';
@@ -155,7 +158,7 @@ export default class ReportController {
       await Reports
         .update(update, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, ids, 'Report Rejected', message, sessionId);
+          await sendNotification(res, ids, 'Report Rejected', message, sessionId, userId);
           return res.status(200).send({
             data: rows[0],
             message: 'Report rejected Successfully',
@@ -173,11 +176,12 @@ export default class ReportController {
       const { id } = req.params;
       const { auth: { adminId }, report: { sessionId, trainerId } } = req.data;
       const { comment } = req.body;
+      const userId = req.data.auth.id;
 
       await Reports
         .update({ partnerStatus: 'requested edit', comment }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [adminId, trainerId], 'Edit Requested', `The partner requested edit for Report ${id} in Session ${sessionId}`, sessionId);
+          await sendNotification(res, [adminId, trainerId], 'Edit Requested', `The partner requested edit for Report ${id} in Session ${sessionId}`, sessionId, userId);
           return res.status(200).send({
             data: rows[0],
             message: 'Requested edit Successfully',
@@ -195,11 +199,12 @@ export default class ReportController {
       const { id } = req.params;
       const { auth: { partnerId }, report: { sessionId, trainerId } } = req.data;
       const { comment } = req.body;
+      const userId = req.data.auth.id;
 
       await Reports
         .update({ adminStatus: 'flagged', comment }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [partnerId, trainerId], 'Report flagged', `The admin flagged Report ${id} in Session ${sessionId}`, sessionId);
+          await sendNotification(res, [partnerId, trainerId], 'Report flagged', `The admin flagged Report ${id} in Session ${sessionId}`, sessionId, userId);
           return res.status(200).send({
             data: rows[0],
             message: 'Report flagged Successfully',

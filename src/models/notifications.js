@@ -9,7 +9,18 @@ module.exports = (sequelize, DataTypes) => {
     },
     title: DataTypes.STRING,
     message: DataTypes.STRING,
-    sessionId: DataTypes.STRING,
+    sessionId: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    performedBy: {
+      type: DataTypes.String,
+      allowNull: false,
+      references: {
+        model: 'Users',
+        key: 'id'
+      }
+    },
     isRead: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -21,6 +32,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Notifications.associate = function(models) {
     // associations can be defined here
+    Notifications.hasOne(models.Users, { foreignKey: 'performedBy', as: 'by' })
   };
   return Notifications;
 };

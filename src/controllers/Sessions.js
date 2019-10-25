@@ -270,11 +270,12 @@ export default class SessionController {
     try {
       const { id } = req.params;
       const { auth: { partnerId, adminId } } = req.data;
+      const userId = req.data.auth.id;
 
       await Sessions
         .update({ ...req.body }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [partnerId, adminId], 'Session Updated', `Session ${id} has been updated`, id);
+          await sendNotification(res, [partnerId, adminId], 'Session Updated', `Session ${id} has been updated`, id, userId);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
@@ -343,7 +344,7 @@ export default class SessionController {
           status: type === 'partner' || type === 'admin' ? 'approved' : 'awaiting approval',
         })
         .then(async (data) => {
-          await sendNotification(res, ids, 'New Session', 'A New Session has been scheduled', sessionId);
+          await sendNotification(res, ids, 'New Session', 'A New Session has been scheduled', sessionId, id);
           return res.status(200).send({
             data: {
               ...data.toJSON(),
@@ -363,11 +364,12 @@ export default class SessionController {
     try {
       const { auth: { partnerId, adminId } } = req.data;
       const { id } = req.params;
+      const userId = req.data.auth.id;
 
       await Sessions
         .update({ accepted: true }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [partnerId, adminId], 'Session Accepted', `Session ${id} has been accepted`, id);
+          await sendNotification(res, [partnerId, adminId], 'Session Accepted', `Session ${id} has been accepted`, id, userId);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
@@ -388,11 +390,12 @@ export default class SessionController {
     try {
       const { id } = req.params;
       const { auth: { adminId }, session: { trainerId, partnerId } } = req.data;
+      const userId = req.data.auth.id;
 
       await Sessions
         .update({ status: 'approved' }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [trainerId, adminId, partnerId], 'Session Approved', `Session ${id} has been approved`, id);
+          await sendNotification(res, [trainerId, adminId, partnerId], 'Session Approved', `Session ${id} has been approved`, id, userId);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
@@ -414,11 +417,12 @@ export default class SessionController {
       const { auth: { adminId, type }, session: { trainerId, partnerId } } = req.data;
       const { id } = req.params;
       const { comment } = req.body;
+      const userId = req.data.auth.id;
 
       await Sessions
         .update({ status: 'rejected', comment }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [trainerId, adminId, partnerId], 'Session Rejected', `Session ${id} has been rejected`, id);
+          await sendNotification(res, [trainerId, adminId, partnerId], 'Session Rejected', `Session ${id} has been rejected`, id, userId);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
@@ -442,13 +446,14 @@ export default class SessionController {
       const { comment } = req.body;
       const sessionDate = new Date(date).getTime();
       const today = new Date().getTime();
+      const userId = req.data.auth.id;
 
       if ((sessionDate - today) < (12 * 60 * 60 * 100)) return accessDenied(res, 'You can\'t cancel a session less than 12 hours before the session');
 
       await Sessions
         .update({ status: 'cancelled', comment }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [trainerId, adminId, partnerId], 'Session Cancelled', `Session ${id} has been cancelled`, id);
+          await sendNotification(res, [trainerId, adminId, partnerId], 'Session Cancelled', `Session ${id} has been cancelled`, id, userId);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
@@ -469,6 +474,7 @@ export default class SessionController {
     try {
       const { id } = req.params;
       const { auth: { partnerId, adminId } } = req.data;
+      const userId = req.data.auth.id;
 
       await Sessions
         .update(
@@ -476,7 +482,7 @@ export default class SessionController {
           { returning: true, where: { id } },
         )
         .then(async ([num, rows]) => {
-          await sendNotification(res, [adminId, partnerId], 'Session Clocked In', `Session ${id} has been clocked in`, id);
+          await sendNotification(res, [adminId, partnerId], 'Session Clocked In', `Session ${id} has been clocked in`, id, userId);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
@@ -496,21 +502,26 @@ export default class SessionController {
   static async clockOut(req, res) {
     try {
       const { id } = req.params;
+      const userId = req.data.auth.id;
+      const { auth: { partnerId, adminId } } = req.data;
 
       await Sessions
         .update(
           { clockOutTime: new Date(), clockStatus: 'clocked out' },
           { returning: true, where: { id } },
         )
-        .then(([num, rows]) => res.status(200).send({
-          data: {
-            ...rows[0].toJSON(),
-            media: rows[0].media ? JSON.parse(rows[0].media) : [],
-            location: JSON.parse(rows[0].location),
-          },
-          message: 'Session Clocked out Successfully',
-          error: false,
-        }))
+        .then(async ([num, rows]) => {
+          await sendNotification(res, [adminId, partnerId], 'Session Clocked Out', `Session ${id} has been clocked out`, id, userId);
+          return res.status(200).send({
+            data: {
+              ...rows[0].toJSON(),
+              media: rows[0].media ? JSON.parse(rows[0].media) : [],
+              location: JSON.parse(rows[0].location),
+            },
+            message: 'Session Clocked out Successfully',
+            error: false,
+          });
+        })
         .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);
