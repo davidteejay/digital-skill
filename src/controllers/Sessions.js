@@ -413,9 +413,10 @@ export default class SessionController {
     try {
       const { auth: { adminId, type }, session: { trainerId, partnerId } } = req.data;
       const { id } = req.params;
+      const { comment } = req.body;
 
       await Sessions
-        .update({ status: 'rejected' }, { returning: true, where: { id } })
+        .update({ status: 'rejected', comment }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
           await sendNotification(res, [trainerId, adminId, partnerId], 'Session Rejected', `Session ${id} has been rejected`, id);
           return res.status(200).send({
@@ -438,9 +439,10 @@ export default class SessionController {
     try {
       const { auth: { adminId }, session: { trainerId, partnerId } } = req.data;
       const { id } = req.params;
+      const { comment } = req.body;
 
       await Sessions
-        .update({ status: 'cancelled' }, { returning: true, where: { id } })
+        .update({ status: 'cancelled', comment }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
           await sendNotification(res, [trainerId, adminId, partnerId], 'Session Cancelled', `Session ${id} has been cancelled`, id);
           return res.status(200).send({

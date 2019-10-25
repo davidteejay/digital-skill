@@ -115,6 +115,7 @@ module.exports = (sequelize, DataTypes) => {
       type: ENUM('awaiting approval', 'approved', 'rejected', 'cancelled'),
       defaultValue: 'awaiting approval',
     },
+    comment: STRING,
     clockStatus: ENUM('clocked in', 'clocked out'),
     clockInTime: DATE,
     clockOutTime: DATE,
