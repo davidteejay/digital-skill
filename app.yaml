@@ -9,3 +9,7 @@ env_variables:
   CLOUDINARY_API_KEY: 632537659423521
   CLOUDINARY_API_SECRET: Pmq3Dd-cLPsAW3XW9tRrwIjyXx4
   FCM_SERVER_KEY: AAAATtabi8g:APA91bFvAWz5t9QvXoIerNAvOhj0wJryvDBtNKVv6FJKmx9y59fjU2fFDUyNsaFQ9d4P4sLVKukbbvHeQOGRYNMbNIAsT0YsEsPAhxqEqrt0rS5JXTxyA6YTLm47X9BAz9qs7LlV4aFe
+  DB_HOST: /cloudsql/digitalskillshub:us-central1:digital-skills
+  DB_USERNAME: admin
+  DB_PASSWORD: admin
+  DB_DATABASE: digital_skills
