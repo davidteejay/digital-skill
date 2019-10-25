@@ -40,7 +40,12 @@ export default class ReportMiddleware {
       const { id } = req.params;
 
       await Reports
-        .findByPk(id)
+        .findByPk(id, {
+          include: [{
+            model: Sessions,
+            as: 'session',
+          }],
+        })
         .then((data) => {
           if (data === null) {
             return notFoundError(res, 'Report Not Found');

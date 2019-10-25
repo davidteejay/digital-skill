@@ -9,7 +9,7 @@ import db from '../models';
 
 const { Users, Notifications } = db;
 
-const sendNotification = async (res, ids, title, message, session) => {
+const sendNotification = async (res, ids, title, message, sessionId) => {
   try {
     dotenv.config();
 
@@ -21,7 +21,7 @@ const sendNotification = async (res, ids, title, message, session) => {
         ids: ids.join(','),
         title,
         message,
-        session,
+        sessionId,
       })
       .catch((err) => console.error(`create notif: ${err.message}`));
 
