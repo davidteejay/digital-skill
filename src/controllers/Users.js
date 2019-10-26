@@ -6,7 +6,7 @@ import generateToken from '../helpers/generateToken';
 import generateID from '../helpers/generateID';
 import { serverError, notFoundError, incompleteDataError } from '../helpers/errors';
 
-const { Users, Reports } = db;
+const { Users, Sessions, Reports } = db;
 
 export default class UserController {
   static async refreshToken(req, res) {
@@ -102,23 +102,54 @@ export default class UserController {
 
   static async getDashboardData(req, res) {
     try {
-      const { auth: { id } } = req.data;
+      const { auth: { id, type } } = req.data;
 
-      await Reports
-        .findAll({ where: { trainerId: id } })
+      let params = {};
+      if (type === 'partner') params = { partnerId: id };
+      if (type === 'trainer') params = { trainerId: id };
+
+      await Sessions
+        .findAll({
+          where: {
+            ...params,
+            accepted: true,
+            status: 'approved',
+            hasReport: true,
+          },
+          include: [{
+            model: Reports,
+            as: 'report',
+          }],
+        })
         .then(async (data) => {
           let numberOfMale = 0;
           let numberOfFemale = 0;
           let numberOfGMB = 0;
+          let totalNumber = 0;
+          let numberOfSMB = 0;
+          let numberofJobSeekers = 0;
 
-          await data.forEach((report) => {
-            numberOfFemale += report.numberOfFemale;
-            numberOfMale += report.numberOfMale;
-            numberOfGMB += report.numberOfGMB;
+          await data.forEach((session) => {
+            if (session.report.adminStatus === 'approved') {
+              numberOfFemale += session.report.numberOfFemale;
+              numberOfMale += session.report.numberOfMale;
+              numberOfGMB += session.report.numberOfGMB;
+              totalNumber += session.report.totalNUmber;
+
+              if (session.materials === 'SMB') numberOfSMB += session.report.totalNumber;
+              if (session.materials === 'Job Seeker') numberofJobSeekers += session.report.totalNumber;
+            }
           });
 
           return res.status(200).send({
-            data: { numberOfFemale, numberOfGMB, numberOfMale },
+            data: {
+              numberOfFemale,
+              numberOfGMB,
+              numberOfMale,
+              totalNumber,
+              numberOfSMB,
+              numberofJobSeekers,
+            },
             message: 'Dashboard Data fetched',
             error: false,
           });
