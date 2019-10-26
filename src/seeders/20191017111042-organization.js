@@ -7,6 +7,7 @@ module.exports = {
       name: 'Pseudo Company',
       shortName: 'Pseudo',
       email: 'company1@gmail.com',
+      phone: '08090909090',
       country: 'Nigeria',
       website: 'www.pseudo.com',
       createdAt: new Date(),

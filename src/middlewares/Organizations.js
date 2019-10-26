@@ -15,9 +15,11 @@ export default class OrganizationMiddleware {
     try {
       const schema = Joi.object().keys({
         name: Joi.string().trim().min(3).required(),
+        shortName: Joi.string().trim().required(),
         country: Joi.string().trim().min(3).required(),
         website: Joi.string().trim().min(3).required(),
         email: Joi.string().email().trim().min(3).required(),
+        phone: Joi.string().trim().min(5).required(),
         logo: Joi.optional(),
       });
 
