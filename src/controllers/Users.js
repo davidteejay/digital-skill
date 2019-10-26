@@ -244,6 +244,23 @@ export default class UserController {
     }
   }
 
+  static async deleteUser(req, res) {
+    try {
+      const { id } = req.params;
+
+      await Users
+        .update({ isDeleted: true }, { where: { id } })
+        .then(([num, rows]) => res.status(200).send({
+          data: null,
+          message: 'User deleted Successfully',
+          error: false,
+        }))
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
   static async approveUser(req, res) {
     try {
       const { id } = req.params;

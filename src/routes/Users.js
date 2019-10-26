@@ -16,6 +16,7 @@ router.get('/dashboard', AuthMiddleware.validateToken, UserController.getDashboa
 router
   .route('/:id')
   .get(AuthMiddleware.validateToken, UserMiddleware.checkIfIdExists, UserController.getOne)
-  .put(AuthMiddleware.validateToken, UserMiddleware.checkIfIdExists, UserController.updateUser);
+  .put(AuthMiddleware.validateToken, UserMiddleware.checkIfIdExists, UserController.updateUser)
+  .delete(AuthMiddleware.validateToken, UserMiddleware.checkIfIdExists, UserController.deleteUser);
 
 export default router;
