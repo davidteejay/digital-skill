@@ -5,6 +5,7 @@ module.exports = {
     return queryInterface.bulkInsert('Organizations', [{
       id: '000001',
       name: 'Pseudo Company',
+      shortName: 'Pseudo',
       email: 'company1@gmail.com',
       country: 'Nigeria',
       website: 'www.pseudo.com',
