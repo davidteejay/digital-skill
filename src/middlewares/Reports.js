@@ -90,13 +90,14 @@ export default class ReportMiddleware {
 
   static async checkIfUserCanReport(req, res, next) {
     try {
-      const { session: { date, time } } = req.data;
+      const { session: { date, time, hasReport } } = req.data;
 
       const sessionDate = new Date(`${date}T${time}Z`);
       const now = new Date().getTime();
       sessionDate.setHours(sessionDate.getHours() + (sessionDate.getTimezoneOffset() / 60));
 
-      if (now > sessionDate) return next();
+      if (now > sessionDate && !hasReport) return next();
+      if (hasReport) return accessDenied(res, 'This session has already been reported');
 
       return accessDenied(res, 'You cannot report until it\'s time for the session');
     } catch (err) {

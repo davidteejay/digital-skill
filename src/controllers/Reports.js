@@ -120,7 +120,7 @@ export default class ReportController {
       }
 
       await Reports
-        .update(update, { returning: true, where: { id } })
+        .update({ ...update, comment: null }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
           await sendNotification(res, ids, 'Report Approved', message, sessionId, userId);
           return res.status(200).send({

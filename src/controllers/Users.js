@@ -130,11 +130,11 @@ export default class UserController {
           let numberofJobSeekers = 0;
 
           await data.forEach((session) => {
-            if (session.report.adminStatus === 'approved') {
+            if (session.report && session.report.adminStatus === 'approved') {
               numberOfFemale += session.report.numberOfFemale;
               numberOfMale += session.report.numberOfMale;
               numberOfGMB += session.report.numberOfGMB;
-              totalNumber += session.report.totalNUmber;
+              totalNumber += session.report.totalNumber;
 
               if (session.materials === 'SMB') numberOfSMB += session.report.totalNumber;
               if (session.materials === 'Job Seeker') numberofJobSeekers += session.report.totalNumber;
