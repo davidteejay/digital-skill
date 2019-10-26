@@ -1,10 +1,14 @@
+/* eslint-disable max-len */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable consistent-return */
 import db from '../models';
 import generateToken from '../helpers/generateToken';
 import generateID from '../helpers/generateID';
-import { serverError, notFoundError, incompleteDataError } from '../helpers/errors';
+import {
+  serverError, notFoundError, incompleteDataError, accessDenied,
+} from '../helpers/errors';
+import sendMail from '../helpers/sendMail';
 
 const { Users, Sessions, Reports } = db;
 
@@ -27,12 +31,13 @@ export default class UserController {
   static async addUser(req, res) {
     try {
       const { auth: { type, id } } = req.data;
+      const { email, firstName, password } = req.body;
       const userId = await generateID(res, Users);
       const userType = req.body.type;
       const partnerID = req.body.partnerId;
 
       if ((type === 'admin' || type === 'super admin') && userType === 'trainer' && !partnerID) return incompleteDataError(res, 'partnerId is required');
-      if (type === 'admin' && (userType === 'admin' || userType === 'super admin')) return incompleteDataError(res, 'You can only add a partner or a trainer');
+      // if (type === 'admin' && (userType === 'admin' || userType === 'super admin')) return incompleteDataError(res, 'You can only add a partner or a trainer');
       if (type === 'assessor manager' && userType !== 'assessor') return incompleteDataError(res, 'You can only add an assessor');
 
       let partnerId = '';
@@ -51,6 +56,7 @@ export default class UserController {
           isApproved: !(type === 'partner' && userType === 'trainer'),
         })
         .then(async (data) => {
+          await sendMail('newUser', email, firstName, { password });
           const token = await generateToken(res, data.toJSON());
           return res.status(200).send({
             data: { ...data.toJSON(), token },
@@ -86,6 +92,7 @@ export default class UserController {
         })
         .then(async (data) => {
           if (data === null) return notFoundError(res, 'Email or Password is incorrect');
+          if (!data.isApproved) return accessDenied(res, 'Your account has been suspended');
 
           const token = await generateToken(res, data.toJSON());
           return res.status(200).send({
@@ -270,6 +277,26 @@ export default class UserController {
         .then(([num, rows]) => res.status(200).send({
           data: rows[0],
           message: 'User approved Successfully',
+          error: false,
+        }))
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async resetPassword(req, res) {
+    try {
+      const { auth: { id, password } } = req.data;
+      const { oldPassword, newPassword } = req.body;
+
+      if (oldPassword !== password) return accessDenied(res, 'Incorrect Password');
+
+      await Users
+        .update({ password: newPassword }, { returning: true, where: { id } })
+        .then(([num, rows]) => res.status(200).send({
+          data: rows[0],
+          message: 'Password Reset Successfully',
           error: false,
         }))
         .catch((err) => serverError(res, err.message));

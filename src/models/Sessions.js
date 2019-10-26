@@ -112,7 +112,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false,
     },
     status: {
-      type: ENUM('awaiting approval', 'approved', 'rejected', 'cancelled'),
+      type: ENUM('awaiting approval', 'approved', 'rejected', 'cancelled', 'not held'),
       defaultValue: 'awaiting approval',
     },
     comment: STRING,

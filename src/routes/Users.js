@@ -12,6 +12,7 @@ router.post('/login', UserController.login);
 router.post('/approve/:id', AuthMiddleware.validateToken, UserMiddleware.checkIfIdExists, UserController.approveUser);
 router.post('/add', AuthMiddleware.validateToken, UserMiddleware.checkIfUserHasAccess, UserMiddleware.validateData, UserMiddleware.checkIfEmailExists, UserController.addUser);
 router.get('/dashboard', AuthMiddleware.validateToken, UserController.getDashboardData);
+router.post('/reset-password', AuthMiddleware.validateToken, UserController.resetPassword);
 
 router
   .route('/:id')

@@ -25,6 +25,11 @@ module.exports = {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialect: "postgres",
+    // username: "chii",
+    // password: "Brain.box8",
+    // database: "digital_skill",
+    // host: "35.222.48.49",
+    // port: 5432,
     logging: false
   }
 };
