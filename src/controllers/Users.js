@@ -127,7 +127,7 @@ export default class UserController {
           let numberOfGMB = 0;
           let totalNumber = 0;
           let numberOfSMB = 0;
-          let numberofJobSeekers = 0;
+          let numberOfJobSeekers = 0;
 
           await data.forEach((session) => {
             if (session.report && session.report.adminStatus === 'approved') {
@@ -137,7 +137,7 @@ export default class UserController {
               totalNumber += session.report.totalNumber;
 
               if (session.materials === 'SMB') numberOfSMB += session.report.totalNumber;
-              if (session.materials === 'Job Seeker') numberofJobSeekers += session.report.totalNumber;
+              if (session.materials === 'Job Seeker') numberOfJobSeekers += session.report.totalNumber;
             }
           });
 
@@ -148,7 +148,7 @@ export default class UserController {
               numberOfMale,
               totalNumber,
               numberOfSMB,
-              numberofJobSeekers,
+              numberOfJobSeekers,
             },
             message: 'Dashboard Data fetched',
             error: false,
