@@ -14,6 +14,10 @@ module.exports = {
         type: STRING,
         allowNull: false,
       },
+      shortName: {
+        type: STRING,
+        allowNull: false,
+      },
       email: {
         type: STRING,
         allowNull: false,
