@@ -22,6 +22,10 @@ module.exports = {
         type: STRING,
         allowNull: false,
       },
+      phone: {
+        type: STRING,
+        allowNull: false,
+      },
       country: {
         type: STRING,
         allowNull: false,

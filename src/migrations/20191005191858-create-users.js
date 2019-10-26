@@ -20,24 +20,12 @@ module.exports = {
       },
       partnerId: {
         type: STRING,
-        references: {
-          model: 'Users',
-          key: 'id'
-        }
       },
       adminId: {
         type: STRING,
-        references: {
-          model: 'Users',
-          key: 'id'
-        }
       },
       organizationId: {
         type: STRING,
-        // references: {
-        //   model: 'Organizations',
-        //   key: 'id'
-        // }
       },
       firstName: {
         type: STRING,

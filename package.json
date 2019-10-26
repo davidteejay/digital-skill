@@ -15,7 +15,7 @@
     "db:seed:undo": "./node_modules/.bin/sequelize db:seed:undo:all",
     "sync": "git push origin HEAD && git push origin2 HEAD",
     "deploy": "gcloud app deploy",
-    "gcp-build": "yarn db:migrate && yarn db:seed"
+    "gcp-build": "yarn db:migrate:undo:all && yarn db:migrate && yarn db:seed"
   },
   "keywords": [],
   "author": "Chibuokem Onyekwelu",
