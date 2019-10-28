@@ -9,6 +9,10 @@ import {
   serverError, notFoundError, incompleteDataError, accessDenied,
 } from '../helpers/errors';
 import sendMail from '../helpers/sendMail';
+import bcrypt from 'bcrypt';
+
+
+const saltRounds = 10;
 
 const { Users, Sessions, Reports } = db;
 
@@ -35,6 +39,7 @@ export default class UserController {
       const userId = await generateID(res, Users);
       const userType = req.body.type;
       const partnerID = req.body.partnerId;
+      const customBody = req.body;
 
       if ((type === 'admin' || type === 'super admin') && userType === 'trainer' && !partnerID) return incompleteDataError(res, 'partnerId is required');
       // if (type === 'admin' && (userType === 'admin' || userType === 'super admin')) return incompleteDataError(res, 'You can only add a partner or a trainer');
@@ -46,10 +51,11 @@ export default class UserController {
         partnerId = req.body.partnerId;
         adminId = id;
       } else partnerId = id;
-
+      let encPassword = await bcrypt.hash(password, saltRounds)
+      customBody.password = encPassword;
       await Users
         .create({
-          ...req.body,
+          ...customBody,
           id: userId,
           partnerId,
           adminId,
@@ -76,7 +82,7 @@ export default class UserController {
 
       await Users
         .findOne({
-          where: { email, password, isDeleted: false },
+          where: { email, isDeleted: false },
           include: [{
             model: db.Users,
             as: 'admin',
@@ -91,9 +97,10 @@ export default class UserController {
           }],
         })
         .then(async (data) => {
-          if (data === null) return notFoundError(res, 'Email or Password is incorrect');
+          if (data === null) return notFoundError(res, 'Account not found');
+          const status = await bcrypt.compare(password, data.password);
+          if(!status) return notFoundError(res, 'Invalid Username or Password');
           if (!data.isApproved) return accessDenied(res, 'Your account has been suspended');
-
           const token = await generateToken(res, data.toJSON());
           return res.status(200).send({
             data: { ...data.toJSON(), token },

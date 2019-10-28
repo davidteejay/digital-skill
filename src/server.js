@@ -81,5 +81,5 @@ app.use((err, req, res, next) => {
   });
 });
 
-const port = PORT || 3000;
+const port = PORT || 8080;
 app.listen(port, () => debug(`Server running on port ${port}`));

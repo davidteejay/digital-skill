@@ -10,6 +10,9 @@ import { serverError, incompleteDataError } from '../helpers/errors';
 import generateID from '../helpers/generateID';
 import sendNotification from '../helpers/sendNotification';
 
+const {BigQuery} = require('@google-cloud/bigquery');
+const bigquery = new BigQuery();
+
 const { Reports, Users } = db;
 
 export default class ReportController {
@@ -95,12 +98,12 @@ export default class ReportController {
         ids = [partnerId, trainerId];
 
         const { organization: { name } } = await Users
-          .findByPk(partnerId, {
-            include: [{
-              model: db.Organizations,
-              as: 'organization',
-            }],
-          });
+        .findByPk(partnerId, {
+          include: [{
+            model: db.Organizations,
+            as: 'organization',
+          }],
+        });
 
         const data = [{
           Training_year: new Date(session.date).getFullYear(),
@@ -113,23 +116,20 @@ export default class ReportController {
           Country: session.country,
           Businesses_verified_on_GMB: numberOfGMB,
         }];
-
-        await axios.post('http://gdsa-120b6.appspot.com/test', data)
-          .then((response) => debug('app:bigQuery')(response.data))
-          .catch((err) => debug('app:bigQuery')(err.response.data));
+        await bigquery.dataset("Google_Digital_Skills_Data").table("DigitalSkillsData").insert(data);
       }
 
       await Reports
-        .update({ ...update, comment: null }, { returning: true, where: { id } })
-        .then(async ([num, rows]) => {
-          await sendNotification(res, ids, 'Report Approved', message, sessionId, userId);
-          return res.status(200).send({
-            data: rows[0],
-            message: 'Report approved Successfully',
-            error: false,
-          });
-        })
-        .catch((err) => serverError(res, err.message));
+      .update({ ...update, comment: null }, { returning: true, where: { id } })
+      .then(async ([num, rows]) => {
+        await sendNotification(res, ids, 'Report Approved', message, sessionId, userId);
+        return res.status(200).send({
+          data: rows[0],
+          message: 'Report approved Successfully',
+          error: false,
+        });
+      })
+      .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);
     }
