@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-unused-vars */
@@ -174,7 +175,14 @@ export default class SessionController {
     try {
       let params = {};
       const { auth: { type, id } } = req.data;
-      const { startDate, endDate } = req.query;
+      let { query } = req;
+
+      const { startDate, endDate } = query;
+
+      delete query.startDate;
+      delete query.endDate;
+
+      console.log(query);
 
       if (type === 'partner') params = { partnerId: id };
       if (type === 'trainer') params = { trainerId: id };
@@ -182,7 +190,7 @@ export default class SessionController {
 
       await Sessions
         .findAll({
-          where: { ...req.query, ...params, isDeleted: false },
+          where: { ...query, ...params, isDeleted: false },
           include: [{
             model: db.Users,
             as: 'trainer',
