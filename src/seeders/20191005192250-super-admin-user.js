@@ -3,6 +3,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert('Users', [{
+      id: '000001',
       type: 'super admin',
       firstName: 'Chibuokem',
       lastName: 'Onyekwelu',
@@ -13,6 +14,7 @@ module.exports = {
       createdAt: new Date(),
       updatedAt: new Date()
     }, {
+      id: '000002',
       type: 'admin',
       firstName: 'Chibuokem',
       lastName: 'Onyekwelu',
@@ -23,6 +25,7 @@ module.exports = {
       createdAt: new Date(),
       updatedAt: new Date()
     }, {
+      id: '000003',
       type: 'partner',
       firstName: 'Chibuokem',
       lastName: 'Onyekwelu',
@@ -32,9 +35,10 @@ module.exports = {
       phone: '07038125957',
       createdAt: new Date(),
       updatedAt: new Date(),
-      adminId: 2,
-      organizationId: 1
+      adminId: '000002',
+      organizationId: '000001'
     }, {
+      id: '000004',
       type: 'trainer',
       firstName: 'Chibuokem',
       lastName: 'Onyekwelu',
@@ -44,10 +48,11 @@ module.exports = {
       phone: '07038125957',
       createdAt: new Date(),
       updatedAt: new Date(),
-      adminId: 2,
-      partnerId: 3,
-      organizationId: 1
+      adminId: '000002',
+      partnerId: '000003',
+      organizationId: '000001'
     }, {
+      id: '000005',
       type: 'assessor',
       firstName: 'Chibuokem',
       lastName: 'Onyekwelu',
@@ -58,6 +63,7 @@ module.exports = {
       createdAt: new Date(),
       updatedAt: new Date(),
     }, {
+      id: '000006',
       type: 'assessor manager',
       firstName: 'Chibuokem',
       lastName: 'Onyekwelu',
