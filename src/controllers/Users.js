@@ -34,15 +34,15 @@ export default class UserController {
 
   static async addUser(req, res) {
     try {
-      const { auth: { type, id } } = req.data;
+      const { auth: { type, id, organization } } = req.data;
+      const organizationId = organization ? organization.id : null;
       const { email, firstName, password } = req.body;
       const userId = await generateID(res, Users);
       const userType = req.body.type;
       const partnerID = req.body.partnerId;
-      const customBody = req.body;
 
       if ((type === 'admin' || type === 'super admin') && userType === 'trainer' && !partnerID) return incompleteDataError(res, 'partnerId is required');
-      // if (type === 'admin' && (userType === 'admin' || userType === 'super admin')) return incompleteDataError(res, 'You can only add a partner or a trainer');
+      if (type === 'admin' && (userType === 'partner' || userType === 'trainer') && !req.body.organizationId) return incompleteDataError(res, 'organizationId is required');
       if (type === 'assessor manager' && userType !== 'assessor') return incompleteDataError(res, 'You can only add an assessor');
 
       let partnerId = '';
@@ -52,13 +52,15 @@ export default class UserController {
         adminId = id;
       } else partnerId = id;
       const encPassword = await bcrypt.hash(password, saltRounds);
-      customBody.password = encPassword;
+
       await Users
         .create({
-          ...customBody,
+          ...req.body,
+          password: encPassword,
           id: userId,
           partnerId,
           adminId,
+          organizationId: type === 'admin' && (userType === 'partner' || userType === 'trainer') ? req.body.organizationId : organizationId,
           isApproved: !(type === 'partner' && userType === 'trainer'),
         })
         .then(async (data) => {
