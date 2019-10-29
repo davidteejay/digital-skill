@@ -1,14 +1,15 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const { DATE, STRING, ENUM, BOOLEAN, DATEONLY, TIME, TEXT } = DataTypes;
+  const { DATE, STRING, ENUM,INTEGER, BOOLEAN, DATEONLY, TIME, TEXT } = DataTypes;
 
   const Sessions = sequelize.define('Sessions', {
     id: {
-      type: STRING,
-      allowNull: false,
-      unique: true,
-      primaryKey: true
-    },
+        type: INTEGER,
+        allowNull: false,
+        unique: true,
+        autoIncrement: true,
+        primaryKey: true
+      },
     type: {
       type: STRING,
       allowNull: false,

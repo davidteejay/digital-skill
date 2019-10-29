@@ -9,10 +9,11 @@ const router = express.Router();
 router.get('/', AuthMiddleware.validateToken, UserMiddleware.checkIfUserHasAccess, UserController.getAll);
 router.get('/refresh-token', AuthMiddleware.validateToken, UserController.refreshToken);
 router.post('/login', UserController.login);
+router.post('/reset', UserController.resetPassword);
 router.post('/approve/:id', AuthMiddleware.validateToken, UserMiddleware.checkIfIdExists, UserController.approveUser);
 router.post('/add', AuthMiddleware.validateToken, UserMiddleware.checkIfUserHasAccess, UserMiddleware.validateData, UserMiddleware.checkIfEmailExists, UserController.addUser);
 router.get('/dashboard', AuthMiddleware.validateToken, UserController.getDashboardData);
-router.post('/reset-password', AuthMiddleware.validateToken, UserController.resetPassword);
+router.post('/changePassword', AuthMiddleware.validateToken, UserController.changePassword);
 
 router
   .route('/:id')

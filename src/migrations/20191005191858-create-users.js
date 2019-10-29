@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    const { DATE, STRING, ENUM, BOOLEAN } = Sequelize;
+    const { DATE, STRING, TEXT, ENUM, BOOLEAN } = Sequelize;
 
     return queryInterface.createTable('Users', {
       id: {
@@ -38,6 +38,7 @@ module.exports = {
       email: {
         type: STRING,
         allowNull: false,
+        unique: true,
       },
       password: {
         type: STRING,
@@ -48,8 +49,12 @@ module.exports = {
         allowNull: false,
       },
       phone: {
-        type: STRING,
+        type: TEXT,
         allowNull: false,
+      },
+      profilePicture: {
+        type: STRING,
+        allowNull: true
       },
       language: {
         type: STRING,

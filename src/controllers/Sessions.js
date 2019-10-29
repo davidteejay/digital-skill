@@ -329,7 +329,6 @@ export default class SessionController {
         },
       } = req.data;
       const { location } = req.body;
-      const sessionId = await generateID(res, Sessions);
 
       const date = new Date(req.body.date).getTime();
       const today = new Date().getTime();
@@ -351,12 +350,11 @@ export default class SessionController {
               ? id
               : req.body.partnerId,
           createdBy: id,
-          id: sessionId,
           accepted: type === 'trainer',
           status: type === 'partner' || type === 'admin' ? 'approved' : 'awaiting approval',
         })
         .then(async (data) => {
-          await sendNotification(res, ids, 'New Session', 'A New Session has been scheduled', sessionId, id);
+          await sendNotification(res, ids, 'New Session', 'A New Session has been scheduled', data["id"], id);
           return res.status(200).send({
             data: {
               ...data.toJSON(),

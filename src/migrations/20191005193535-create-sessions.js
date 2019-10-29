@@ -1,13 +1,14 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    const { DATE, STRING, ENUM, BOOLEAN, DATEONLY, TIME, TEXT } = Sequelize;
+    const { DATE, STRING, ENUM, BOOLEAN, DATEONLY,INTEGER, TIME, TEXT } = Sequelize;
 
     return queryInterface.createTable('Sessions', {
       id: {
-        type: STRING,
+        type: INTEGER,
         allowNull: false,
         unique: true,
+        autoIncrement: true,
         primaryKey: true
       },
       type: {
