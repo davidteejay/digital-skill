@@ -33,7 +33,7 @@ module.exports = {
         }
       },
       sessionId: {
-        type: STRING,
+        type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: 'Sessions',

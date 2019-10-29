@@ -114,6 +114,47 @@ export default class UserController {
     }
   }
 
+
+  static async resetPassword(req, res) {
+    try {
+      const {email} = req.body;
+
+      await Users
+      .findOne({
+        where: { email, isDeleted: false },
+        include: [{
+          model: db.Users,
+          as: 'admin',
+          attributes: ['id', 'email', 'firstName', 'lastName'],
+        }, {
+          model: db.Users,
+          as: 'partner',
+          attributes: ['id', 'email', 'firstName', 'lastName'],
+        }, {
+          model: db.Organizations,
+          as: 'organization',
+        }],
+      })
+      .then(async (data) => {
+        if (data === null) return notFoundError(res, 'Account not found');
+        const password = await generateID(res, Users);
+        let encPassword = await bcrypt.hash(password, saltRounds)
+        return await Users
+        .update({ password: encPassword }, { returning: true, where: { email } })
+        .then(([num, rows]) => res.status(200).send({
+          data: rows[0],
+          message: 'Password Updated Successfully '+ password,
+          error: false,
+        }))
+
+      })
+      .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+
   static async getDashboardData(req, res) {
     try {
       const { auth: { id, type } } = req.data;
@@ -292,18 +333,20 @@ export default class UserController {
     }
   }
 
-  static async resetPassword(req, res) {
+  static async changePassword(req, res) {
     try {
       const { auth: { id, password } } = req.data;
       const { oldPassword, newPassword } = req.body;
-
-      if (oldPassword !== password) return accessDenied(res, 'Incorrect Password');
-
+      console.log(password)
+      const status = await bcrypt.compare(oldPassword,password);
+      console.log(status)
+      if (!status) return accessDenied(res, 'Incorrect Password');
+      let encPassword = await bcrypt.hash(newPassword, saltRounds)
       await Users
-        .update({ password: newPassword }, { returning: true, where: { id } })
+        .update({ password: encPassword }, { returning: true, where: { id } })
         .then(([num, rows]) => res.status(200).send({
           data: rows[0],
-          message: 'Password Reset Successfully',
+          message: 'Password Updated Successfully',
           error: false,
         }))
         .catch((err) => serverError(res, err.message));

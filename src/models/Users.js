@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const { DATE, STRING, ENUM, BOOLEAN } = DataTypes;
+  const { DATE, TEXT, STRING, ENUM, BOOLEAN } = DataTypes;
 
   const Users = sequelize.define('Users', {
     id: {
@@ -58,6 +58,10 @@ module.exports = (sequelize, DataTypes) => {
     phone: {
       type: STRING,
       allowNull: false,
+    },
+    profilePicture: {
+      type: TEXT,
+      allowNull: true,
     },
     language: {
       type: STRING,
