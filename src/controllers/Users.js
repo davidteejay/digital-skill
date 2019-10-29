@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable consistent-return */
+import bcrypt from 'bcrypt';
 import db from '../models';
 import generateToken from '../helpers/generateToken';
 import generateID from '../helpers/generateID';
@@ -9,7 +10,6 @@ import {
   serverError, notFoundError, incompleteDataError, accessDenied,
 } from '../helpers/errors';
 import sendMail from '../helpers/sendMail';
-import bcrypt from 'bcrypt';
 
 
 const saltRounds = 10;
@@ -51,7 +51,7 @@ export default class UserController {
         partnerId = req.body.partnerId;
         adminId = id;
       } else partnerId = id;
-      let encPassword = await bcrypt.hash(password, saltRounds)
+      const encPassword = await bcrypt.hash(password, saltRounds);
       customBody.password = encPassword;
       await Users
         .create({
@@ -99,7 +99,7 @@ export default class UserController {
         .then(async (data) => {
           if (data === null) return notFoundError(res, 'Account not found');
           const status = await bcrypt.compare(password, data.password);
-          if(!status) return notFoundError(res, 'Invalid Username or Password');
+          if (!status) return notFoundError(res, 'Invalid Username or Password');
           if (!data.isApproved) return accessDenied(res, 'Your account has been suspended');
           const token = await generateToken(res, data.toJSON());
           return res.status(200).send({
@@ -117,38 +117,38 @@ export default class UserController {
 
   static async resetPassword(req, res) {
     try {
-      const {email} = req.body;
+      const { email } = req.body;
 
       await Users
-      .findOne({
-        where: { email, isDeleted: false },
-        include: [{
-          model: db.Users,
-          as: 'admin',
-          attributes: ['id', 'email', 'firstName', 'lastName'],
-        }, {
-          model: db.Users,
-          as: 'partner',
-          attributes: ['id', 'email', 'firstName', 'lastName'],
-        }, {
-          model: db.Organizations,
-          as: 'organization',
-        }],
-      })
-      .then(async (data) => {
-        if (data === null) return notFoundError(res, 'Account not found');
-        const password = await generateID(res, Users);
-        let encPassword = await bcrypt.hash(password, saltRounds)
-        return await Users
-        .update({ password: encPassword }, { returning: true, where: { email } })
-        .then(([num, rows]) => res.status(200).send({
-          data: rows[0],
-          message: 'Password Updated Successfully '+ password,
-          error: false,
-        }))
+        .findOne({
+          where: { email, isDeleted: false },
+          include: [{
+            model: db.Users,
+            as: 'admin',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Users,
+            as: 'partner',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Organizations,
+            as: 'organization',
+          }],
+        })
+        .then(async (data) => {
+          if (data === null) return notFoundError(res, 'Account not found');
+          const password = await generateID(res, Users);
+          const encPassword = await bcrypt.hash(password, saltRounds);
 
-      })
-      .catch((err) => serverError(res, err.message));
+          await Users
+            .update({ password: encPassword }, { returning: true, where: { email } })
+            .then(([num, rows]) => res.status(200).send({
+              data: rows[0],
+              message: `Password Updated Successfully ${password}`,
+              error: false,
+            }));
+        })
+        .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);
     }
@@ -337,11 +337,9 @@ export default class UserController {
     try {
       const { auth: { id, password } } = req.data;
       const { oldPassword, newPassword } = req.body;
-      console.log(password)
-      const status = await bcrypt.compare(oldPassword,password);
-      console.log(status)
+      const status = await bcrypt.compare(oldPassword, password);
       if (!status) return accessDenied(res, 'Incorrect Password');
-      let encPassword = await bcrypt.hash(newPassword, saltRounds)
+      const encPassword = await bcrypt.hash(newPassword, saltRounds);
       await Users
         .update({ password: encPassword }, { returning: true, where: { id } })
         .then(([num, rows]) => res.status(200).send({
