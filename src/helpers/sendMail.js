@@ -8,17 +8,20 @@ const templates = {
   reportSession: 'd-6ad5bc5d7e594da0a4c5d386bc19cf69',
   supportClient: 'd-92150d16443745709b20c516d99d9e0a',
   supportAdmin: 'd-b4d355831ddb483388f517c68b032330',
-  assignedSessionDelay: 'd-d10f779ef22049739259c17472eeffdf'  
+  assignedSessionDelay: 'd-d10f779ef22049739259c17472eeffdf',
+};
+
+const sender = {
+  Sender_Name: 'The GDSA Hub',
+  Sender_Address: 'Google Digital Skills',
+  Sender_City: 'SSA ',
+  Sender_State: 'Africa',
 };
 
 const sendMail = async (type, email, name, data) => {
   dotenv.config();
   const { SENDGRID_KEY } = process.env;
   sgMail.setApiKey(SENDGRID_KEY);
-  data["Sender_Name"] = "The GDSA Hub"
-  data["Sender_Address"] = "Google Digital Skills"
-  data["Sender_City"] = "SSA "
-  data["Sender_State"] = "Africa"
 
   const msg = {
     to: email,
@@ -27,6 +30,7 @@ const sendMail = async (type, email, name, data) => {
     templateId: templates[type],
     dynamic_template_data: {
       ...data,
+      ...sender,
       name,
     },
   };

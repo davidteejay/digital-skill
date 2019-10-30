@@ -19,6 +19,7 @@ export default class SessionMiddleware {
         time: Joi.string().trim().required(),
         trainerId: Joi.string().trim().min(3).optional(),
         partnerId: Joi.string().trim().min(3).optional(),
+        organizationId: Joi.string().trim().min(3).optional(),
         language: Joi.string().trim().optional(),
         country: Joi.string().trim().min(3).required(),
         state: Joi.string().trim().min(3).required(),
@@ -74,9 +75,9 @@ export default class SessionMiddleware {
 
   static async checkIfUserHasAccess(req, res, next) {
     try {
-      const { auth: { type, id }, session: { partnerId } } = req.data;
+      const { auth: { type, organizationId }, session } = req.data;
 
-      if ((type === 'partner' && partnerId === id)) return next();
+      if ((type === 'partner' && organizationId === session.organizationId)) return next();
 
       return accessDenied(res, 'You don\'t access to this feature');
     } catch (err) {
@@ -100,9 +101,10 @@ export default class SessionMiddleware {
 
   static async checkIfUserCanView(req, res, next) {
     try {
-      const { auth: { id, type }, session: { trainerId, partnerId, assessorId } } = req.data;
+      const { auth: { id, type, organizationId }, session } = req.data;
+      const { assessorId, trainerId } = session;
 
-      if (type === 'partner' && partnerId !== id) return accessDenied(res, 'You don\'t have access to this session');
+      if (type === 'partner' && organizationId !== session.organizationId) return accessDenied(res, 'You don\'t have access to this session');
       if (type === 'trainer' && trainerId !== id) return accessDenied(res, 'You don\'t have access to this session');
       if (type === 'assessor' && assessorId !== id) return accessDenied(res, 'You don\'t have access to this session');
 

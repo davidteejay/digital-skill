@@ -43,6 +43,14 @@ module.exports = {
           key: 'id'
         }
       },
+      organizationId: {
+        type: STRING,
+        allowNull: false,
+        references: {
+          model: 'Organizations',
+          key: 'id'
+        }
+      },
       assessorId: {
         type: STRING,
         references: {

@@ -12,6 +12,8 @@ router.get('/with-reports', AuthMiddleware.validateToken, SessionController.getW
 router.get('/without-reports', AuthMiddleware.validateToken, SessionController.getWithoutReports);
 router.get('/filter', AuthMiddleware.validateToken, SessionController.filter);
 
+router.get('/send-reminder', SessionController.sendReminder);
+
 router.post('/schedule', AuthMiddleware.validateToken, SessionMiddleware.validateData, SessionController.schedule);
 router.post('/accept/:id', AuthMiddleware.validateToken, SessionMiddleware.checkIfIdExists, SessionMiddleware.checkIfUserCanAccept, SessionController.accept);
 router.post('/approve/:id', AuthMiddleware.validateToken, SessionMiddleware.checkIfIdExists, SessionMiddleware.checkIfUserHasAccess, SessionController.approve);

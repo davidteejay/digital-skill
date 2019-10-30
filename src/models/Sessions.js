@@ -42,6 +42,14 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id'
       }
     },
+    organizationId: {
+      type: STRING,
+      allowNull: false,
+      references: {
+        model: 'Organizations',
+        key: 'id'
+      }
+    },
     assessorId: {
       type: STRING,
       references: {
@@ -143,6 +151,7 @@ module.exports = (sequelize, DataTypes) => {
     // associations can be defined here
     Sessions.belongsTo(models.Users, { foreignKey: 'trainerId', as: 'trainer' })
     Sessions.belongsTo(models.Users, { foreignKey: 'partnerId', as: 'partner' })
+    Sessions.belongsTo(models.Organizations, { foreignKey: 'organizationId', as: 'organization' })
     Sessions.belongsTo(models.Users, { foreignKey: 'createdBy', as: 'sessionCreatedBy' })
     Sessions.belongsTo(models.Users, { foreignKey: 'assessorId', as: 'assessor' })
 

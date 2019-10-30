@@ -7,6 +7,7 @@ import db from '../models';
 import { serverError, accessDenied, incompleteDataError } from '../helpers/errors';
 import generateID from '../helpers/generateID';
 import sendNotification from '../helpers/sendNotification';
+import sendMail from '../helpers/sendMail';
 
 const { Sessions } = db;
 
@@ -14,9 +15,9 @@ export default class SessionController {
   static async getAll(req, res) {
     try {
       let params = {};
-      const { auth: { type, id } } = req.data;
+      const { auth: { type, id, organizationId } } = req.data;
 
-      if (type === 'partner') params = { partnerId: id };
+      if (type === 'partner') params = { organizationId };
       if (type === 'trainer') params = { trainerId: id };
       if (type === 'assessor') params = { assessorId: id };
 
@@ -38,6 +39,9 @@ export default class SessionController {
           }, {
             model: db.Reports,
             as: 'report',
+          }, {
+            model: db.Organizations,
+            as: 'organization',
           }],
         })
         .then(async (data) => {
@@ -66,16 +70,16 @@ export default class SessionController {
   static async getWithReports(req, res) {
     try {
       let params = {};
-      const { auth: { type, id } } = req.data;
+      const { auth: { type, id, organizationId } } = req.data;
 
-      if (type === 'partner') params = { partnerId: id };
+      if (type === 'partner') params = { organizationId };
       if (type === 'trainer') params = { trainerId: id };
       if (type === 'assessor') params = { assessorId: id };
 
       await Sessions
         .findAll({
           where: {
-            ...req.params, ...params, accepted: true, status: 'approved', hasReport: true, isDeleted: false,
+            ...req.query, ...params, accepted: true, status: 'approved', hasReport: true, isDeleted: false,
           },
           include: [{
             model: db.Users,
@@ -92,6 +96,9 @@ export default class SessionController {
           }, {
             model: db.Reports,
             as: 'report',
+          }, {
+            model: db.Organizations,
+            as: 'organization',
           }],
         })
         .then(async (data) => {
@@ -120,16 +127,16 @@ export default class SessionController {
   static async getWithoutReports(req, res) {
     try {
       let params = {};
-      const { auth: { type, id } } = req.data;
+      const { auth: { type, id, organizationId } } = req.data;
 
-      if (type === 'partner') params = { partnerId: id };
+      if (type === 'partner') params = { organizationId };
       if (type === 'trainer') params = { trainerId: id };
       if (type === 'assessor') params = { assessorId: id };
 
       await Sessions
         .findAll({
           where: {
-            ...req.params, ...params, accepted: true, status: 'approved', hasReport: false, isDeleted: false,
+            ...req.query, ...params, accepted: true, status: 'approved', hasReport: false, isDeleted: false,
           },
           include: [{
             model: db.Users,
@@ -146,6 +153,9 @@ export default class SessionController {
           }, {
             model: db.Reports,
             as: 'report',
+          }, {
+            model: db.Organizations,
+            as: 'organization',
           }],
         })
         .then(async (data) => {
@@ -174,7 +184,7 @@ export default class SessionController {
   static async filter(req, res) {
     try {
       let params = {};
-      const { auth: { type, id } } = req.data;
+      const { auth: { type, id, organizationId } } = req.data;
       let { query } = req;
 
       const { startDate, endDate } = query;
@@ -182,7 +192,7 @@ export default class SessionController {
       delete query.startDate;
       delete query.endDate;
 
-      if (type === 'partner') params = { partnerId: id };
+      if (type === 'partner') params = { organizationId };
       if (type === 'trainer') params = { trainerId: id };
       if (type === 'assessor') params = { assessorId: id };
 
@@ -204,6 +214,9 @@ export default class SessionController {
           }, {
             model: db.Reports,
             as: 'report',
+          }, {
+            model: db.Organizations,
+            as: 'organization',
           }],
         })
         .then(async (data) => {
@@ -323,7 +336,7 @@ export default class SessionController {
     try {
       const {
         auth: {
-          type, id, partnerId, adminId,
+          type, id, partnerId, adminId, organizationId,
         },
       } = req.data;
       const { location } = req.body;
@@ -342,6 +355,7 @@ export default class SessionController {
         .create({
           ...req.body,
           trainerId: type === 'trainer' ? id : req.body.trainerId,
+          organizationId: type === 'trainer' || type === 'partner' ? organizationId : req.body.organizationId,
           partnerId: type === 'trainer'
             ? partnerId
             : type === 'partner'
@@ -559,6 +573,40 @@ export default class SessionController {
           message: 'Media added Successfully',
           error: false,
         }))
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async sendReminder(req, res) {
+    try {
+      await Sessions
+        .findAll({
+          where: { status: 'approved', accepted: false, isDeleted: false },
+          include: [{
+            model: db.Users,
+            as: 'trainer',
+            attributes: ['id', 'email', 'firstName', 'lastName', 'type'],
+          }],
+        })
+        .then(async (data) => {
+          data.forEach(async (session) => {
+            const { trainer: { firstName, lastName, email } } = session;
+            const createdAt = new Date(session.createdAt).getTime();
+            const now = new Date().getTime();
+
+            const hours = (now - createdAt) / 3600000;
+
+            if (Math.floor(hours) === 12) await sendMail('assignedSessionDelay', email, `${firstName} ${lastName}`, session);
+          });
+
+          return res.status(200).send({
+            data: null,
+            message: 'Reminders sent Successfully',
+            error: false,
+          });
+        })
         .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);
