@@ -34,26 +34,18 @@ export default class UserController {
 
   static async addUser(req, res) {
     try {
-<<<<<<< HEAD
-      const { auth: { type, id } } = req.data;
-      const { email, firstName, password,lastName } = req.body;
-=======
+
       const { auth: { type, id, organization } } = req.data;
       const organizationId = organization ? organization.id : null;
       const { email, firstName, password } = req.body;
->>>>>>> origin
+
       const userId = await generateID(res, Users);
       const userType = req.body.type;
       const partnerID = req.body.partnerId;
 
       if ((type === 'admin' || type === 'super admin') && userType === 'trainer' && !partnerID) return incompleteDataError(res, 'partnerId is required');
-<<<<<<< HEAD
-      // if (type === 'admin' && (userType === 'admin' || userType === 'super admin')) return incompleteDataError(res, 'You can only add a partner or a trainer');
-      if (type === 'assessor manager' && type === 'googler' && userType !== 'assessor') return incompleteDataError(res, 'You can only add an assessor');
-=======
       if (type === 'admin' && (userType === 'partner' || userType === 'trainer') && !req.body.organizationId) return incompleteDataError(res, 'organizationId is required');
-      if (type === 'assessor manager' && userType !== 'assessor') return incompleteDataError(res, 'You can only add an assessor');
->>>>>>> origin
+      if (type === 'assessor manager'  && userType !== 'assessor') return incompleteDataError(res, 'You can only add an assessor');
 
       let partnerId = '';
       let adminId = null;
@@ -130,9 +122,7 @@ export default class UserController {
   static async resetPassword(req, res) {
     try {
       const { email } = req.body;
-
       await Users
-<<<<<<< HEAD
       .findOne({
         where: { email, isDeleted: false },
         include: [{
@@ -166,37 +156,6 @@ export default class UserController {
 
       })
       .catch((err) => serverError(res, err.message));
-=======
-        .findOne({
-          where: { email, isDeleted: false },
-          include: [{
-            model: db.Users,
-            as: 'admin',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
-          }, {
-            model: db.Users,
-            as: 'partner',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
-          }, {
-            model: db.Organizations,
-            as: 'organization',
-          }],
-        })
-        .then(async (data) => {
-          if (data === null) return notFoundError(res, 'Account not found');
-          const password = await generateID(res, Users);
-          const encPassword = await bcrypt.hash(password, saltRounds);
-
-          await Users
-            .update({ password: encPassword }, { returning: true, where: { email } })
-            .then(([num, rows]) => res.status(200).send({
-              data: rows[0],
-              message: `Password Updated Successfully ${password}`,
-              error: false,
-            }));
-        })
-        .catch((err) => serverError(res, err.message));
->>>>>>> origin
     } catch (err) {
       return serverError(res, err.message);
     }
