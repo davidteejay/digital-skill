@@ -30,26 +30,14 @@ module.exports = {
       trainerId: {
         type: STRING,
         allowNull: false,
-        references: {
-          model: 'Users',
-          key: 'id'
-        }
       },
       partnerId: {
         type: STRING,
         allowNull: false,
-        references: {
-          model: 'Users',
-          key: 'id'
-        }
       },
       organizationId: {
         type: STRING,
         allowNull: false,
-        references: {
-          model: 'Organizations',
-          key: 'id'
-        }
       },
       assessorId: {
         type: STRING,
