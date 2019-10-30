@@ -38,7 +38,7 @@ export default class OrganizationMiddleware {
     try {
       const { auth: { type } } = req.data;
 
-      if (type !== 'admin' && type !== 'super admin') return accessDenied(res);
+      if (type !== 'admin' && type !== 'super admin' && type !== 'googler') return accessDenied(res);
 
       return next();
     } catch (err) {

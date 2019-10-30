@@ -14,6 +14,7 @@ router.post('/approve/:id', AuthMiddleware.validateToken, UserMiddleware.checkIf
 router.post('/add', AuthMiddleware.validateToken, UserMiddleware.checkIfUserHasAccess, UserMiddleware.validateData, UserMiddleware.checkIfEmailExists, UserController.addUser);
 router.get('/dashboard', AuthMiddleware.validateToken, UserController.getDashboardData);
 router.post('/changePassword', AuthMiddleware.validateToken, UserController.changePassword);
+router.post('/support', AuthMiddleware.validateToken, UserController.support);
 
 router
   .route('/:id')

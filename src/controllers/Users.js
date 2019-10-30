@@ -360,4 +360,44 @@ export default class UserController {
       return serverError(res, err.message);
     }
   }
+
+  static async support(req, res) {
+    try {
+      const { auth: { id } } = req.data;
+      const { category,subject,message } = req.body;
+
+      await Users
+        .findOne({
+          where: { id, isDeleted: false },
+          include: [{
+            model: db.Users,
+            as: 'admin',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Users,
+            as: 'partner',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Organizations,
+            as: 'organization',
+          }],
+        })
+        .then((data) => {
+          const user_name =  data.firstName +" "+ data.lastName
+          const user_email =  data.email
+          console.log(user_email)
+          sendMail('supportClient', data.email, data.firstName +" "+ data.lastName, { subject,category,message });
+          sendMail('supportAdmin', "gdsa@digitalrepublic.ng", "Admin", { user_email,user_name,subject,category,message });
+          res.status(200).send({
+          data:{
+          },
+          message: 'Support Submitted',
+          error: false,
+        })
+      })
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
 }
