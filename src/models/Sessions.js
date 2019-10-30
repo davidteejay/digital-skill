@@ -4,12 +4,12 @@ module.exports = (sequelize, DataTypes) => {
 
   const Sessions = sequelize.define('Sessions', {
     id: {
-        type: INTEGER,
-        allowNull: false,
-        unique: true,
-        autoIncrement: true,
-        primaryKey: true
-      },
+      type: INTEGER,
+      allowNull: false,
+      unique: true,
+      autoIncrement: true,
+      primaryKey: true
+    },
     type: {
       type: STRING,
       allowNull: false,

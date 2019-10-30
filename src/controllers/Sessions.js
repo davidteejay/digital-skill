@@ -182,8 +182,6 @@ export default class SessionController {
       delete query.startDate;
       delete query.endDate;
 
-      console.log(query);
-
       if (type === 'partner') params = { partnerId: id };
       if (type === 'trainer') params = { trainerId: id };
       if (type === 'assessor') params = { assessorId: id };
@@ -354,7 +352,7 @@ export default class SessionController {
           status: type === 'partner' || type === 'admin' ? 'approved' : 'awaiting approval',
         })
         .then(async (data) => {
-          await sendNotification(res, ids, 'New Session', 'A New Session has been scheduled', data["id"], id);
+          await sendNotification(res, ids, 'New Session', 'A New Session has been scheduled', data.id, id);
           return res.status(200).send({
             data: {
               ...data.toJSON(),

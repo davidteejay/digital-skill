@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable consistent-return */
+import bcrypt from 'bcrypt';
 import db from '../models';
 import generateToken from '../helpers/generateToken';
 import generateID from '../helpers/generateID';
@@ -9,7 +10,6 @@ import {
   serverError, notFoundError, incompleteDataError, accessDenied,
 } from '../helpers/errors';
 import sendMail from '../helpers/sendMail';
-import bcrypt from 'bcrypt';
 
 
 const saltRounds = 10;
@@ -34,16 +34,26 @@ export default class UserController {
 
   static async addUser(req, res) {
     try {
+<<<<<<< HEAD
       const { auth: { type, id } } = req.data;
       const { email, firstName, password,lastName } = req.body;
+=======
+      const { auth: { type, id, organization } } = req.data;
+      const organizationId = organization ? organization.id : null;
+      const { email, firstName, password } = req.body;
+>>>>>>> origin
       const userId = await generateID(res, Users);
       const userType = req.body.type;
       const partnerID = req.body.partnerId;
-      const customBody = req.body;
 
       if ((type === 'admin' || type === 'super admin') && userType === 'trainer' && !partnerID) return incompleteDataError(res, 'partnerId is required');
+<<<<<<< HEAD
       // if (type === 'admin' && (userType === 'admin' || userType === 'super admin')) return incompleteDataError(res, 'You can only add a partner or a trainer');
       if (type === 'assessor manager' && type === 'googler' && userType !== 'assessor') return incompleteDataError(res, 'You can only add an assessor');
+=======
+      if (type === 'admin' && (userType === 'partner' || userType === 'trainer') && !req.body.organizationId) return incompleteDataError(res, 'organizationId is required');
+      if (type === 'assessor manager' && userType !== 'assessor') return incompleteDataError(res, 'You can only add an assessor');
+>>>>>>> origin
 
       let partnerId = '';
       let adminId = null;
@@ -51,14 +61,16 @@ export default class UserController {
         partnerId = req.body.partnerId;
         adminId = id;
       } else partnerId = id;
-      let encPassword = await bcrypt.hash(password, saltRounds)
-      customBody.password = encPassword;
+      const encPassword = await bcrypt.hash(password, saltRounds);
+
       await Users
         .create({
-          ...customBody,
+          ...req.body,
+          password: encPassword,
           id: userId,
           partnerId,
           adminId,
+          organizationId: type === 'admin' && (userType === 'partner' || userType === 'trainer') ? req.body.organizationId : organizationId,
           isApproved: !(type === 'partner' && userType === 'trainer'),
         })
         .then(async (data) => {
@@ -99,7 +111,7 @@ export default class UserController {
         .then(async (data) => {
           if (data === null) return notFoundError(res, 'Account not found');
           const status = await bcrypt.compare(password, data.password);
-          if(!status) return notFoundError(res, 'Invalid Username or Password');
+          if (!status) return notFoundError(res, 'Invalid Username or Password');
           if (!data.isApproved) return accessDenied(res, 'Your account has been suspended');
           const token = await generateToken(res, data.toJSON());
           return res.status(200).send({
@@ -117,9 +129,10 @@ export default class UserController {
 
   static async resetPassword(req, res) {
     try {
-      const {email} = req.body;
+      const { email } = req.body;
 
       await Users
+<<<<<<< HEAD
       .findOne({
         where: { email, isDeleted: false },
         include: [{
@@ -153,6 +166,37 @@ export default class UserController {
 
       })
       .catch((err) => serverError(res, err.message));
+=======
+        .findOne({
+          where: { email, isDeleted: false },
+          include: [{
+            model: db.Users,
+            as: 'admin',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Users,
+            as: 'partner',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Organizations,
+            as: 'organization',
+          }],
+        })
+        .then(async (data) => {
+          if (data === null) return notFoundError(res, 'Account not found');
+          const password = await generateID(res, Users);
+          const encPassword = await bcrypt.hash(password, saltRounds);
+
+          await Users
+            .update({ password: encPassword }, { returning: true, where: { email } })
+            .then(([num, rows]) => res.status(200).send({
+              data: rows[0],
+              message: `Password Updated Successfully ${password}`,
+              error: false,
+            }));
+        })
+        .catch((err) => serverError(res, err.message));
+>>>>>>> origin
     } catch (err) {
       return serverError(res, err.message);
     }
@@ -341,11 +385,9 @@ export default class UserController {
     try {
       const { auth: { id, password } } = req.data;
       const { oldPassword, newPassword } = req.body;
-      console.log(password)
-      const status = await bcrypt.compare(oldPassword,password);
-      console.log(status)
+      const status = await bcrypt.compare(oldPassword, password);
       if (!status) return accessDenied(res, 'Incorrect Password');
-      let encPassword = await bcrypt.hash(newPassword, saltRounds)
+      const encPassword = await bcrypt.hash(newPassword, saltRounds);
       await Users
         .update({ password: encPassword }, { returning: true, where: { id } })
         .then(([num, rows]) => 

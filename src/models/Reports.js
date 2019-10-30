@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
 
   const Reports = sequelize.define('Reports', {
     id: {
-      type: STRING,
+      type: INTEGER,
       allowNull: false,
       unique: true,
       primaryKey: true

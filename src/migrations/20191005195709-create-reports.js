@@ -10,12 +10,6 @@ module.exports = {
         primaryKey: true,
         type: INTEGER
       },
-      id: {
-        type: STRING,
-        allowNull: false,
-        unique: true,
-        primaryKey: true
-      },
       trainerId: {
         type: STRING,
         allowNull: false,
@@ -33,7 +27,7 @@ module.exports = {
         }
       },
       sessionId: {
-        type: Sequelize.INTEGER,
+        type: INTEGER,
         allowNull: false,
         references: {
           model: 'Sessions',

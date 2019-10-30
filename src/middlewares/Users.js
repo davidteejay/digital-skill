@@ -16,7 +16,8 @@ export default class UserMiddleware {
     try {
       const schema = Joi.object().keys({
         type: Joi.string().trim().min(3).required(),
-        partnerId: Joi.string().trim().min(3).optional(),
+        partnerId: Joi.string().trim().optional(),
+        organizationId: Joi.string().trim().optional(),
         firstName: Joi.string().trim().min(3).required(),
         lastName: Joi.string().trim().min(3).required(),
         email: Joi.string().trim().email().required(),
