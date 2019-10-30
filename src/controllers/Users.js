@@ -34,16 +34,18 @@ export default class UserController {
 
   static async addUser(req, res) {
     try {
+
       const { auth: { type, id, organization } } = req.data;
       const organizationId = organization ? organization.id : null;
       const { email, firstName, password } = req.body;
+
       const userId = await generateID(res, Users);
       const userType = req.body.type;
       const partnerID = req.body.partnerId;
 
       if ((type === 'admin' || type === 'super admin') && userType === 'trainer' && !partnerID) return incompleteDataError(res, 'partnerId is required');
       if (type === 'admin' && (userType === 'partner' || userType === 'trainer') && !req.body.organizationId) return incompleteDataError(res, 'organizationId is required');
-      if (type === 'assessor manager' && userType !== 'assessor') return incompleteDataError(res, 'You can only add an assessor');
+      if (type === 'assessor manager'  && userType !== 'assessor') return incompleteDataError(res, 'You can only add an assessor');
 
       let partnerId = '';
       let adminId = null;
@@ -64,7 +66,7 @@ export default class UserController {
           isApproved: !(type === 'partner' && userType === 'trainer'),
         })
         .then(async (data) => {
-          await sendMail('newUser', email, firstName, { password });
+          await sendMail('newUser', email, firstName +" "+lastName, { password });
           const token = await generateToken(res, data.toJSON());
           return res.status(200).send({
             data: { ...data.toJSON(), token },
@@ -120,37 +122,40 @@ export default class UserController {
   static async resetPassword(req, res) {
     try {
       const { email } = req.body;
-
       await Users
-        .findOne({
-          where: { email, isDeleted: false },
-          include: [{
-            model: db.Users,
-            as: 'admin',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
-          }, {
-            model: db.Users,
-            as: 'partner',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
-          }, {
-            model: db.Organizations,
-            as: 'organization',
-          }],
-        })
-        .then(async (data) => {
-          if (data === null) return notFoundError(res, 'Account not found');
-          const password = await generateID(res, Users);
-          const encPassword = await bcrypt.hash(password, saltRounds);
+      .findOne({
+        where: { email, isDeleted: false },
+        include: [{
+          model: db.Users,
+          as: 'admin',
+          attributes: ['id', 'email', 'firstName', 'lastName'],
+        }, {
+          model: db.Users,
+          as: 'partner',
+          attributes: ['id', 'email', 'firstName', 'lastName'],
+        }, {
+          model: db.Organizations,
+          as: 'organization',
+        }],
+      })
+      .then(async (data) => {
+        if (data === null) return notFoundError(res, 'Account not found');
+        const password = await generateID(res, Users);
+        let encPassword = await bcrypt.hash(password, saltRounds)
+        return await Users
+        .update({ password: encPassword }, { returning: true, where: { email } })
+        .then(([num, rows]) => {
+          sendMail('passwordReset', rows[0].email, rows[0].firstName +" "+ rows[0].lastName, { password });
+          res.status(200).send({
+            data: rows[0],
+            message: 'Password Updated Successfully ',
+            error: false,
+          })
+        }
+        )
 
-          await Users
-            .update({ password: encPassword }, { returning: true, where: { email } })
-            .then(([num, rows]) => res.status(200).send({
-              data: rows[0],
-              message: `Password Updated Successfully ${password}`,
-              error: false,
-            }));
-        })
-        .catch((err) => serverError(res, err.message));
+      })
+      .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);
     }
@@ -344,11 +349,52 @@ export default class UserController {
       const encPassword = await bcrypt.hash(newPassword, saltRounds);
       await Users
         .update({ password: encPassword }, { returning: true, where: { id } })
-        .then(([num, rows]) => res.status(200).send({
+        .then(([num, rows]) => 
+          res.status(200).send({
           data: rows[0],
           message: 'Password Updated Successfully',
           error: false,
         }))
+        .catch((err) => serverError(res, err.message));
+    } catch (err) {
+      return serverError(res, err.message);
+    }
+  }
+
+  static async support(req, res) {
+    try {
+      const { auth: { id } } = req.data;
+      const { category,subject,message } = req.body;
+
+      await Users
+        .findOne({
+          where: { id, isDeleted: false },
+          include: [{
+            model: db.Users,
+            as: 'admin',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Users,
+            as: 'partner',
+            attributes: ['id', 'email', 'firstName', 'lastName'],
+          }, {
+            model: db.Organizations,
+            as: 'organization',
+          }],
+        })
+        .then((data) => {
+          const user_name =  data.firstName +" "+ data.lastName
+          const user_email =  data.email
+          console.log(user_email)
+          sendMail('supportClient', data.email, data.firstName +" "+ data.lastName, { subject,category,message });
+          sendMail('supportAdmin', "gdsa@digitalrepublic.ng", "Admin", { user_email,user_name,subject,category,message });
+          res.status(200).send({
+          data:{
+          },
+          message: 'Support Submitted',
+          error: false,
+        })
+      })
         .catch((err) => serverError(res, err.message));
     } catch (err) {
       return serverError(res, err.message);

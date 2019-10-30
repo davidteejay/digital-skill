@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     type: {
-      type: ENUM('trainer', 'partner', 'admin', 'super admin', 'assessor', 'assessor manager'),
+      type: ENUM('trainer', 'partner', 'admin', 'super admin','googler','assessor', 'assessor manager'),
       allowNull: false,
     },
     expertiseLevel: ENUM('beginner', 'intermediate', 'expert'),

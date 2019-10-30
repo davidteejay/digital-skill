@@ -26,23 +26,13 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     sessionId: {
-      type: STRING,
+      type: INTEGER,
       allowNull: false,
       references: {
         model: 'Sessions',
         key: 'id'
       }
     },
-    // images: {
-    //   type: STRING,
-    //   allowNull: false,
-    //   get: function () {
-    //     return JSON.parse(this.getDataValue('images'))
-    //   },
-    //   set: function (val) {
-    //     return this.setDataValue('images', JSON.stringify(val))
-    //   }
-    // },
     quote: {
       type: STRING,
       allowNull: false,

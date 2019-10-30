@@ -1,0 +1,4 @@
+cron:
+- description: "check sessions not accepted"
+  url: /tasks/summary
+  schedule: every 1 hours
