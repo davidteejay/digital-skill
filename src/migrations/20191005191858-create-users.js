@@ -11,7 +11,7 @@ module.exports = {
         primaryKey: true
       },
       type: {
-        type: ENUM('trainer', 'partner', 'admin', 'super admin', 'assessor', 'assessor manager'),
+        type: ENUM('trainer', 'partner', 'admin', 'super admin','googler', 'assessor', 'assessor manager'),
         allowNull: false,
       },
       expertiseLevel: {
@@ -83,6 +83,11 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Users');
+    return Promise.all([
+                queryInterface.dropTable('Users'),
+                queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_Users_type";'),
+                queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_Users_expertiseLevel";'),
+                queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_Users_sex";'),
+            ]);
   }
 };

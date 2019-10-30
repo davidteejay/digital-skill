@@ -35,7 +35,7 @@ export default class UserController {
   static async addUser(req, res) {
     try {
       const { auth: { type, id } } = req.data;
-      const { email, firstName, password } = req.body;
+      const { email, firstName, password,lastName } = req.body;
       const userId = await generateID(res, Users);
       const userType = req.body.type;
       const partnerID = req.body.partnerId;
@@ -43,7 +43,7 @@ export default class UserController {
 
       if ((type === 'admin' || type === 'super admin') && userType === 'trainer' && !partnerID) return incompleteDataError(res, 'partnerId is required');
       // if (type === 'admin' && (userType === 'admin' || userType === 'super admin')) return incompleteDataError(res, 'You can only add a partner or a trainer');
-      if (type === 'assessor manager' && userType !== 'assessor') return incompleteDataError(res, 'You can only add an assessor');
+      if (type === 'assessor manager' && type === 'googler' && userType !== 'assessor') return incompleteDataError(res, 'You can only add an assessor');
 
       let partnerId = '';
       let adminId = null;
@@ -62,7 +62,7 @@ export default class UserController {
           isApproved: !(type === 'partner' && userType === 'trainer'),
         })
         .then(async (data) => {
-          await sendMail('newUser', email, firstName, { password });
+          await sendMail('newUser', email, firstName +" "+lastName, { password });
           const token = await generateToken(res, data.toJSON());
           return res.status(200).send({
             data: { ...data.toJSON(), token },
@@ -141,11 +141,15 @@ export default class UserController {
         let encPassword = await bcrypt.hash(password, saltRounds)
         return await Users
         .update({ password: encPassword }, { returning: true, where: { email } })
-        .then(([num, rows]) => res.status(200).send({
-          data: rows[0],
-          message: 'Password Updated Successfully '+ password,
-          error: false,
-        }))
+        .then(([num, rows]) => {
+          sendMail('passwordReset', rows[0].email, rows[0].firstName +" "+ rows[0].lastName, { password });
+          res.status(200).send({
+            data: rows[0],
+            message: 'Password Updated Successfully ',
+            error: false,
+          })
+        }
+        )
 
       })
       .catch((err) => serverError(res, err.message));
@@ -344,7 +348,8 @@ export default class UserController {
       let encPassword = await bcrypt.hash(newPassword, saltRounds)
       await Users
         .update({ password: encPassword }, { returning: true, where: { id } })
-        .then(([num, rows]) => res.status(200).send({
+        .then(([num, rows]) => 
+          res.status(200).send({
           data: rows[0],
           message: 'Password Updated Successfully',
           error: false,
