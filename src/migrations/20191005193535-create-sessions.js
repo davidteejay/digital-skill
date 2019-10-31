@@ -31,10 +31,6 @@ module.exports = {
         type: STRING,
         allowNull: false,
       },
-      partnerId: {
-        type: STRING,
-        allowNull: false,
-      },
       organizationId: {
         type: STRING,
         allowNull: false,

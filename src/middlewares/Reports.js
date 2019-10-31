@@ -139,9 +139,9 @@ export default class ReportMiddleware {
 
   static async checkIfUserHasAccess(req, res, next) {
     try {
-      const { auth: { type, id }, report: { partnerId } } = req.data;
+      const { auth: { type, organizationId }, report } = req.data;
 
-      if ((type === 'partner' && id === partnerId) || type === 'admin') return next();
+      if ((type === 'partner' && organizationId === report.organizationId) || type === 'admin') return next();
 
       return accessDenied(res);
     } catch (err) {
@@ -151,9 +151,9 @@ export default class ReportMiddleware {
 
   static async checkIfUserCanRequestEdit(req, res, next) {
     try {
-      const { auth: { type, id }, report: { partnerId } } = req.data;
+      const { auth: { type, organizationId }, report } = req.data;
 
-      if (type === 'partner' && id === partnerId) return next();
+      if (type === 'partner' && organizationId === report.organizationId) return next();
 
       return accessDenied(res);
     } catch (err) {

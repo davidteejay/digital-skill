@@ -18,7 +18,7 @@ module.exports = {
           key: 'id'
         }
       },
-      partnerId: {
+      organizationId: {
         type: STRING,
         allowNull: false,
         references: {

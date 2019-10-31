@@ -35,26 +35,21 @@ export default class UserController {
 
   static async addUser(req, res) {
     try {
-      const { auth: { type, id, organization } } = req.data;
-      const organizationId = organization ? organization.id : null;
+      const {
+        auth: {
+          type, id, organizationId, adminId,
+        },
+      } = req.data;
       const {
         email, firstName, lastName, password,
       } = req.body;
 
       const userId = await generateID(res, Users);
       const userType = req.body.type;
-      const partnerID = req.body.partnerId;
 
-      if ((type === 'admin' || type === 'super admin') && userType === 'trainer' && !partnerID) return incompleteDataError(res, 'partnerId is required');
       if (type === 'admin' && (userType === 'partner' || userType === 'trainer') && !req.body.organizationId) return incompleteDataError(res, 'organizationId is required');
       if (type === 'assessor manager' && userType !== 'assessor') return incompleteDataError(res, 'You can only add an assessor');
 
-      let partnerId = '';
-      let adminId = null;
-      if (type === 'admin' || type === 'super admin') {
-        partnerId = req.body.partnerId;
-        adminId = id;
-      } else partnerId = id;
       const encPassword = await bcrypt.hash(password, saltRounds);
 
       await Users
@@ -62,8 +57,7 @@ export default class UserController {
           ...req.body,
           password: encPassword,
           id: userId,
-          partnerId,
-          adminId,
+          adminId: type === 'admin' ? id : adminId,
           organizationId: type === 'admin' && (userType === 'partner' || userType === 'trainer') ? req.body.organizationId : organizationId,
           isApproved: !(type === 'partner' && userType === 'trainer'),
         })
@@ -90,23 +84,18 @@ export default class UserController {
         .findOne({
           where: { email, isDeleted: false },
           include: [{
-            model: db.Users,
-            as: 'admin',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
-          }, {
-            model: db.Users,
-            as: 'partner',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
-          }, {
             model: db.Organizations,
             as: 'organization',
           }],
         })
         .then(async (data) => {
-          if (data === null) return notFoundError(res, 'Account not found');
+          if (data === null) return notFoundError(res, 'Invalid Username or Password');
+
           const status = await bcrypt.compare(password, data.password);
           if (!status) return notFoundError(res, 'Invalid Username or Password');
+
           if (!data.isApproved) return accessDenied(res, 'Your account has been suspended');
+
           const token = await generateToken(res, data.toJSON());
           return res.status(200).send({
             data: { ...data.toJSON(), token },
@@ -119,7 +108,6 @@ export default class UserController {
       return serverError(res, err.message);
     }
   }
-
 
   static async resetPassword(req, res) {
     try {
@@ -164,10 +152,10 @@ export default class UserController {
 
   static async getDashboardData(req, res) {
     try {
-      const { auth: { id, type } } = req.data;
+      const { auth: { id, type, organizationId } } = req.data;
 
       let params = {};
-      if (type === 'partner') params = { partnerId: id };
+      if (type === 'partner') params = { organizationId };
       if (type === 'trainer') params = { trainerId: id };
 
       await Sessions
@@ -224,25 +212,17 @@ export default class UserController {
 
   static async getAll(req, res) {
     try {
-      const { auth: { type, id } } = req.data;
+      const { auth: { type, organizationId } } = req.data;
 
       let params = {};
 
-      if (type === 'partner') params = { partnerId: id };
+      if (type === 'partner') params = { organizationId };
       if (type === 'assessor manager') params = { type: 'assessor' };
 
       await Users
         .findAll({
           where: { ...req.query, ...params, isDeleted: false },
           include: [{
-            model: db.Users,
-            as: 'admin',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
-          }, {
-            model: db.Users,
-            as: 'partner',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
-          }, {
             model: db.Organizations,
             as: 'organization',
           }],
@@ -266,14 +246,6 @@ export default class UserController {
         .findOne({
           where: { id, isDeleted: false },
           include: [{
-            model: db.Users,
-            as: 'admin',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
-          }, {
-            model: db.Users,
-            as: 'partner',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
-          }, {
             model: db.Organizations,
             as: 'organization',
           }],
@@ -344,9 +316,11 @@ export default class UserController {
     try {
       const { auth: { id, password } } = req.data;
       const { oldPassword, newPassword } = req.body;
+
       const status = await bcrypt.compare(oldPassword, password);
       if (!status) return accessDenied(res, 'Incorrect Password');
       const encPassword = await bcrypt.hash(newPassword, saltRounds);
+
       await Users
         .update({ password: encPassword }, { returning: true, where: { id } })
         .then(([num, rows]) => res.status(200).send({
@@ -369,14 +343,6 @@ export default class UserController {
         .findOne({
           where: { id, isDeleted: false },
           include: [{
-            model: db.Users,
-            as: 'admin',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
-          }, {
-            model: db.Users,
-            as: 'partner',
-            attributes: ['id', 'email', 'firstName', 'lastName'],
-          }, {
             model: db.Organizations,
             as: 'organization',
           }],

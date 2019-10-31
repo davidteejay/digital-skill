@@ -17,11 +17,11 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id'
       }
     },
-    partnerId: {
+    organizationId: {
       type: STRING,
       allowNull: false,
       references: {
-        model: 'Users',
+        model: 'Organizations',
         key: 'id'
       }
     },
@@ -82,7 +82,7 @@ module.exports = (sequelize, DataTypes) => {
   Reports.associate = function(models) {
     // associations can be defined here
     Reports.belongsTo(models.Users, { foreignKey: 'trainerId', as: 'trainer' })
-    Reports.belongsTo(models.Users, { foreignKey: 'partnerId', as: 'partner' })
+    Reports.belongsTo(models.Organizations, { foreignKey: 'organizationId', as: 'organization' })
     Reports.belongsTo(models.Sessions, { foreignKey: 'sessionId', as: 'session' })
   };
   return Reports;

@@ -292,13 +292,13 @@ export default class SessionController {
   static async update(req, res) {
     try {
       const { id } = req.params;
-      const { auth: { partnerId, adminId } } = req.data;
+      const { auth: { organizationId, adminId } } = req.data;
       const userId = req.data.auth.id;
 
       await Sessions
         .update({ ...req.body }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [partnerId, adminId], 'Session Updated', `Session ${id} has been updated`, id, userId);
+          await sendNotification(res, [adminId], 'Session Updated', `Session ${id} has been updated`, id, userId, organizationId);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
@@ -336,7 +336,7 @@ export default class SessionController {
     try {
       const {
         auth: {
-          type, id, partnerId, adminId, organizationId,
+          type, id, adminId, organizationId,
         },
       } = req.data;
       const { location } = req.body;
@@ -345,7 +345,7 @@ export default class SessionController {
       const today = new Date().getTime();
 
       let ids = [];
-      if (type === 'trainer') ids = [adminId, partnerId];
+      if (type === 'trainer') ids = [adminId];
       else ids = [adminId, req.body.trainerId];
 
       if (type === 'trainer' && date < today + (4 * 24 * 60 * 60 * 100)) return accessDenied(res, 'A session must be scheduled at least 4 days before the date');
@@ -355,18 +355,13 @@ export default class SessionController {
         .create({
           ...req.body,
           trainerId: type === 'trainer' ? id : req.body.trainerId,
-          organizationId: type === 'trainer' || type === 'partner' ? organizationId : req.body.organizationId,
-          partnerId: type === 'trainer'
-            ? partnerId
-            : type === 'partner'
-              ? id
-              : req.body.partnerId,
+          organizationId: (type === 'trainer' || type === 'partner') ? organizationId : req.body.organizationId,
           createdBy: id,
           accepted: type === 'trainer',
           status: type === 'partner' || type === 'admin' ? 'approved' : 'awaiting approval',
         })
         .then(async (data) => {
-          await sendNotification(res, ids, 'New Session', 'A New Session has been scheduled', data.id, id);
+          await sendNotification(res, ids, 'New Session', 'A New Session has been scheduled', data.id, id, organizationId);
           return res.status(200).send({
             data: {
               ...data.toJSON(),
@@ -384,14 +379,14 @@ export default class SessionController {
 
   static async accept(req, res) {
     try {
-      const { auth: { partnerId, adminId } } = req.data;
+      const { auth: { adminId, organizationId } } = req.data;
       const { id } = req.params;
       const userId = req.data.auth.id;
 
       await Sessions
         .update({ accepted: true }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [partnerId, adminId], 'Session Accepted', `Session ${id} has been accepted`, id, userId);
+          await sendNotification(res, [adminId], 'Session Accepted', `Session ${id} has been accepted`, id, userId, organizationId);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
@@ -411,13 +406,13 @@ export default class SessionController {
   static async approve(req, res) {
     try {
       const { id } = req.params;
-      const { auth: { adminId }, session: { trainerId, partnerId } } = req.data;
+      const { auth: { adminId, organizationId }, session: { trainerId } } = req.data;
       const userId = req.data.auth.id;
 
       await Sessions
         .update({ status: 'approved' }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [trainerId, adminId, partnerId], 'Session Approved', `Session ${id} has been approved`, id, userId);
+          await sendNotification(res, [trainerId, adminId], 'Session Approved', `Session ${id} has been approved`, id, userId, organizationId);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
@@ -436,7 +431,7 @@ export default class SessionController {
 
   static async reject(req, res) {
     try {
-      const { auth: { adminId, type }, session: { trainerId, partnerId } } = req.data;
+      const { auth: { adminId, organizationId, type }, session: { trainerId } } = req.data;
       const { id } = req.params;
       const { comment } = req.body;
       const userId = req.data.auth.id;
@@ -444,7 +439,7 @@ export default class SessionController {
       await Sessions
         .update({ status: 'rejected', comment }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [trainerId, adminId, partnerId], 'Session Rejected', `Session ${id} has been rejected`, id, userId);
+          await sendNotification(res, [trainerId, adminId], 'Session Rejected', `Session ${id} has been rejected by the ${type}`, id, userId, organizationId);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
@@ -463,7 +458,7 @@ export default class SessionController {
 
   static async cancel(req, res) {
     try {
-      const { auth: { adminId }, session: { trainerId, partnerId, date } } = req.data;
+      const { auth: { adminId, organizationId }, session: { trainerId, date } } = req.data;
       const { id } = req.params;
       const { comment } = req.body;
       const sessionDate = new Date(date).getTime();
@@ -475,7 +470,7 @@ export default class SessionController {
       await Sessions
         .update({ status: 'cancelled', comment }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
-          await sendNotification(res, [trainerId, adminId, partnerId], 'Session Cancelled', `Session ${id} has been cancelled`, id, userId);
+          await sendNotification(res, [trainerId, adminId], 'Session Cancelled', `Session ${id} has been cancelled`, id, userId, organizationId);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
@@ -495,7 +490,7 @@ export default class SessionController {
   static async clockIn(req, res) {
     try {
       const { id } = req.params;
-      const { auth: { partnerId, adminId } } = req.data;
+      const { auth: { organizationId, adminId } } = req.data;
       const userId = req.data.auth.id;
 
       await Sessions
@@ -504,7 +499,7 @@ export default class SessionController {
           { returning: true, where: { id } },
         )
         .then(async ([num, rows]) => {
-          await sendNotification(res, [adminId, partnerId], 'Session Clocked In', `Session ${id} has been clocked in`, id, userId);
+          await sendNotification(res, [adminId], 'Session Clocked In', `Session ${id} has been clocked in`, id, userId, organizationId);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),
@@ -525,7 +520,7 @@ export default class SessionController {
     try {
       const { id } = req.params;
       const userId = req.data.auth.id;
-      const { auth: { partnerId, adminId } } = req.data;
+      const { auth: { organizationId, adminId } } = req.data;
 
       await Sessions
         .update(
@@ -533,7 +528,7 @@ export default class SessionController {
           { returning: true, where: { id } },
         )
         .then(async ([num, rows]) => {
-          await sendNotification(res, [adminId, partnerId], 'Session Clocked Out', `Session ${id} has been clocked out`, id, userId);
+          await sendNotification(res, [adminId], 'Session Clocked Out', `Session ${id} has been clocked out`, id, userId, organizationId);
           return res.status(200).send({
             data: {
               ...rows[0].toJSON(),

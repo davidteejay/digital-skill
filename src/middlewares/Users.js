@@ -16,7 +16,6 @@ export default class UserMiddleware {
     try {
       const schema = Joi.object().keys({
         type: Joi.string().trim().min(3).required(),
-        partnerId: Joi.string().trim().optional(),
         organizationId: Joi.string().trim().optional(),
         firstName: Joi.string().trim().min(3).required(),
         lastName: Joi.string().trim().min(3).required(),
@@ -45,7 +44,7 @@ export default class UserMiddleware {
     try {
       const { auth: { type } } = req.data;
 
-      if (type === 'partner' || type === 'admin' || type === 'super admin' || type === 'googler'  || type === 'assessor manager') return next();
+      if (type === 'partner' || type === 'admin' || type === 'super admin' || type === 'googler' || type === 'assessor manager') return next();
 
       return accessDenied(res, 'You don\'t access to this feature');
     } catch (err) {

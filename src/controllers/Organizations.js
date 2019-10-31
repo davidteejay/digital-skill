@@ -50,6 +50,10 @@ export default class OrganizationController {
       await Organizations
         .findAll({
           where: { ...req.params, isDeleted: false },
+          include: [{
+            model: db.Users,
+            as: 'users',
+          }],
         })
         .then(async (data) => res.status(200).send({
           data,
@@ -67,7 +71,12 @@ export default class OrganizationController {
       const { id } = req.params;
 
       await Organizations
-        .findByPk(id)
+        .findByPk(id, {
+          include: [{
+            model: db.Users,
+            as: 'users',
+          }],
+        })
         .then((data) => res.status(200).send({
           data,
           message: 'Organizations fetched Successfully',
