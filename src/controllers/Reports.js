@@ -3,9 +3,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable radix */
 /* eslint-disable consistent-return */
-import axios from 'axios';
-import debug from 'debug';
-
 import db from '../models';
 import { serverError, incompleteDataError } from '../helpers/errors';
 import generateID from '../helpers/generateID';
@@ -107,11 +104,11 @@ export default class ReportController {
       let message = '';
       let ids = [];
       if (type === 'partner') {
-        update = { partnerStatus: 'approved' };
+        update = { partnerStatus: 'approved', lastPartnerActionBy: userId };
         message = `Report ${id} for Session ${sessionId} has been approved by partner`;
         ids = [adminId, trainerId];
       } else {
-        update = { adminStatus: 'approved' };
+        update = { adminStatus: 'approved', lastAdminActionBy: userId };
         message = `Report ${id} for Session ${sessionId} has been approved by admin`;
         ids = [trainerId];
 
@@ -157,11 +154,11 @@ export default class ReportController {
       let message = '';
       let ids = [];
       if (type === 'partner') {
-        update = { partnerStatus: 'rejected', comment };
+        update = { partnerStatus: 'rejected', comment, lastPartnerActionBy: userId };
         message = `Report ${id} for Session ${sessionId} has been rejected by partner`;
         ids = [adminId, trainerId];
       } else {
-        update = { adminStatus: 'rejected' };
+        update = { adminStatus: 'rejected', comment, lastAdminActionBy: userId };
         message = `Report ${id} for Session ${sessionId} has been rejected by admin`;
         ids = [trainerId];
       }
@@ -190,7 +187,7 @@ export default class ReportController {
       const userId = req.data.auth.id;
 
       await Reports
-        .update({ partnerStatus: 'requested edit', comment }, { returning: true, where: { id } })
+        .update({ partnerStatus: 'requested edit', comment, lastPartnerActionBy: userId }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
           await sendNotification(res, [adminId, trainerId], 'Edit Requested', `The partner requested edit for Report ${id} in Session ${sessionId}`, sessionId, userId, organizationId);
           return res.status(200).send({
@@ -213,7 +210,7 @@ export default class ReportController {
       const userId = req.data.auth.id;
 
       await Reports
-        .update({ adminStatus: 'flagged', comment }, { returning: true, where: { id } })
+        .update({ adminStatus: 'flagged', comment, lastAdminActionBy: userId }, { returning: true, where: { id } })
         .then(async ([num, rows]) => {
           await sendNotification(res, [trainerId], 'Report flagged', `The admin flagged Report ${id} in Session ${sessionId}`, sessionId, userId, organizationId);
           await Users

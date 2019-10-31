@@ -65,6 +65,20 @@ module.exports = {
         type: ENUM('pending', 'flagged', 'approved', 'rejected'),
         defaultValue: 'pending',
       },
+      lastPartnerActionBy: {
+        type: STRING,
+        references: {
+          model: 'Users',
+          key: 'id'
+        }
+      },
+      lastAdminActionBy: {
+        type: STRING,
+        references: {
+          model: 'Users',
+          key: 'id'
+        }
+      },
       comment: {
         type: STRING,
       },
